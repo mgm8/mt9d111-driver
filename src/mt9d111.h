@@ -42,6 +42,11 @@
 
 #include "i2c.h"
 
+#define MT9D111_CONFIG_I2C_ADR_LOW      0x48
+#define MT9D111_CONFIG_I2C_ADR_HIGH     0xBA
+
+#define MT9D111_CONFIG_I2C_ID           MT9D111_CONFIG_I2C_ADR_LOW
+
 /**
  * \class MT9D111
  *
