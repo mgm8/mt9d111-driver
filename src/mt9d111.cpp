@@ -105,6 +105,8 @@ bool MT9D111::ReadReg(uint8_t adr, uint16_t *val)
     {
         uint16_t reg_val = i2c->ReadReg16(adr);
 
+        reg_val = ((reg_val & 0xFF00) >> 8) + ((reg_val & 0x00FF) << 8);
+
         *val = reg_val;
 
         return true;
