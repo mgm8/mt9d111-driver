@@ -53,12 +53,12 @@
 #define I2C_SMBUS_WRITE                     0
 
 // SMBus transaction types
-#define I2C_SMBUS_QUICK		                0
-#define I2C_SMBUS_BYTE		                1
-#define I2C_SMBUS_BYTE_DATA	                2 
-#define I2C_SMBUS_WORD_DATA	                3
-#define I2C_SMBUS_PROC_CALL	                4
-#define I2C_SMBUS_BLOCK_DATA	            5
+#define I2C_SMBUS_QUICK                     0
+#define I2C_SMBUS_BYTE                      1
+#define I2C_SMBUS_BYTE_DATA                 2 
+#define I2C_SMBUS_WORD_DATA                 3
+#define I2C_SMBUS_PROC_CALL                 4
+#define I2C_SMBUS_BLOCK_DATA                5
 #define I2C_SMBUS_I2C_BLOCK_BROKEN          6
 #define I2C_SMBUS_BLOCK_PROC_CALL           7       // SMBus 2.0
 #define I2C_SMBUS_I2C_BLOCK_DATA            8
@@ -86,10 +86,10 @@ union I2C_SMBus_Data
  */
 struct I2C_SMBus_IOCtl_Data
 {
-    int8_t read_write;              /**< Read (I2C_SMBUS_READ) or write (I2C_SMBUS_WRITE) operation. */
-    uint8_t command;                /**< Command (or register address). This byte is written before the data stream. */
-    uint16_t size;                  /**< Data length. */
-    I2C_SMBus_Data *data;           /**< Data to transfer. */
+    char read_write;        /**< Read (I2C_SMBUS_READ) or write (I2C_SMBUS_WRITE) operation. */
+    uint8_t command;        /**< Command (or register address). This byte is written before the data stream. */
+    int size;               /**< Data length. */
+    I2C_SMBus_Data *data;   /**< Data to transfer. */
 };
 
 /**

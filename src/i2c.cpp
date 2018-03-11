@@ -49,7 +49,7 @@ I2C::I2C()
 
 I2C::I2C(const char* dev_adr, uint8_t dev_id)
 {
-    Setup(dev_adr, dev_id);
+    this->Setup(dev_adr, dev_id);
 }
 
 I2C::~I2C()
@@ -62,7 +62,12 @@ I2C::~I2C()
 
 bool I2C::Setup(const char* dev_adr, uint8_t dev_id)
 {
-    if (((fd = open(dev_adr, O_RDWR)) < 0) or (ioctl(fd, I2C_SLAVE, dev_id) < 0))
+    if ((fd = open(dev_adr, O_RDWR)) < 0)
+    {
+        return false;
+    }
+
+    if (ioctl(fd, I2C_SLAVE, dev_id) < 0)
     {
         return false;
     }
@@ -88,13 +93,13 @@ uint8_t I2C::Read()
 {
     I2C_SMBus_Data data;
 
-    if (SMBusAccess(I2C_SMBUS_READ, 0, I2C_SMBUS_BYTE, &data))
+    if (this->SMBusAccess(I2C_SMBUS_READ, 0, I2C_SMBUS_BYTE, &data))
     {
         return -1;
     }
     else
     {
-        return data.byte;
+        return data.byte & 0xFF;
     }
 }
 
@@ -102,13 +107,13 @@ uint8_t I2C::ReadReg8(uint8_t reg_adr)
 {
     I2C_SMBus_Data data;
 
-    if (SMBusAccess(I2C_SMBUS_READ, reg_adr, I2C_SMBUS_BYTE_DATA, &data))
+    if (this->SMBusAccess(I2C_SMBUS_READ, reg_adr, I2C_SMBUS_BYTE_DATA, &data))
     {
         return -1;
     }
     else
     {
-        return data.byte;
+        return data.byte & 0xFF;
     }
 }
 
@@ -116,19 +121,19 @@ uint16_t I2C::ReadReg16(uint8_t reg_adr)
 {
     I2C_SMBus_Data data;
 
-    if (SMBusAccess(I2C_SMBUS_READ, reg_adr, I2C_SMBUS_WORD_DATA, &data))
+    if (this->SMBusAccess(I2C_SMBUS_READ, reg_adr, I2C_SMBUS_WORD_DATA, &data))
     {
         return -1;
     }
     else
     {
-        return data.word;
+        return data.word & 0xFFFF;
     }
 }
 
 bool I2C::Write(uint8_t byte)
 {
-    return SMBusAccess(I2C_SMBUS_WRITE, byte, I2C_SMBUS_BYTE, NULL);
+    return this->SMBusAccess(I2C_SMBUS_WRITE, byte, I2C_SMBUS_BYTE, NULL);
 }
 
 bool I2C::WriteReg8(uint8_t reg_adr, uint8_t value)
@@ -137,7 +142,7 @@ bool I2C::WriteReg8(uint8_t reg_adr, uint8_t value)
 
     data.byte = value;
     
-    return SMBusAccess(I2C_SMBUS_WRITE, reg_adr, I2C_SMBUS_BYTE_DATA, &data);
+    return this->SMBusAccess(I2C_SMBUS_WRITE, reg_adr, I2C_SMBUS_BYTE_DATA, &data);
 }
 
 bool I2C::WriteReg16(uint8_t reg_adr, uint16_t value)
@@ -146,7 +151,7 @@ bool I2C::WriteReg16(uint8_t reg_adr, uint16_t value)
 
     data.word = value;
     
-    return SMBusAccess(I2C_SMBUS_WRITE, reg_adr, I2C_SMBUS_WORD_DATA, &data);
+    return this->SMBusAccess(I2C_SMBUS_WRITE, reg_adr, I2C_SMBUS_WORD_DATA, &data);
 }
 
 //! \} End of i2c group
