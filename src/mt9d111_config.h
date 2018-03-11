@@ -38,29 +38,14 @@
 #ifndef MT9D111_CONFIG_H_
 #define MT9D111_CONFIG_H_
 
-#define MT9D111_CONFIG_I2C_ADR_LOW      0x90
-#define MT9D111_CONFIG_I2C_ADR_HIGH     0xBA
-
-#define MT9D111_CONFIG_I2C_ID           MT9D111_CONFIG_I2C_ADR_LOW
+#include "mt9d111_reg.h"
 
 /**
- * \struct RegisterConfig
+ * \var reg_default_vals
  * 
- * \brief Struct to store an register address and its value.
- * 
+ * \brief Default registers values (Values after boot).
  */
-struct RegisterConfig
-{
-    uint8_t     address;    /**< Register address. */
-    uint16_t    value;      /**< Register value. */
-};
-
-/**
- * \var reg_values
- * 
- * \brief Pre-defined sensor registers values.
- */
-const RegisterConfig reg_values[] = 
+const Register reg_default_vals[] = 
 {
     {MT9D111_REG_ROW_START,                     0x001C},
     {MT9D111_REG_COLUMN_START,                  0x003C},

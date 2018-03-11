@@ -38,6 +38,19 @@
 #ifndef MT9D111_REG_H_
 #define MT9D111_REG_H_
 
+#include <stdint.h>
+
+/**
+ * \struct Register
+ * 
+ * \brief Struct to store an register address and its value.
+ */
+struct Register
+{
+    uint8_t     address;    /**< Register address. */
+    uint16_t    value;      /**< Register value. */
+};
+
 /**
  * \brief Sensor Core Registers Addresses.
  *
