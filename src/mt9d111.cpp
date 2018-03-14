@@ -121,6 +121,8 @@ bool MT9D111::WriteReg(uint8_t adr, uint16_t val)
 {
     if (is_open)
     {
+        val = ((val & 0xFF00) >> 8) + ((val & 0x00FF) << 8);
+
         return i2c->WriteReg16(adr, val);
     }
     else
