@@ -35,7 +35,10 @@
  * \{
  */
 
+#include <unistd.h>
+
 #include "mt9d111.h"
+#include "mt9d111_pins.h"
 #include "mt9d111_reg.h"
 #include "mt9d111_config.h"
 
@@ -61,13 +64,24 @@ MT9D111::~MT9D111()
 
 bool MT9D111::Open(const char *dev_adr)
 {
-    i2c = new I2C;
+    i2c     = new I2C;
+    reset   = new GPIO;
+    standby = new GPIO;
 
-    if (i2c->Setup(dev_adr, MT9D111_CONFIG_I2C_ID))
+    if (i2c->Setup(dev_adr, MT9D111_CONFIG_I2C_ID) and
+       reset->Open(MT9D111_GPIO_RESET, GPIO_DIR_OUTPUT) and
+       standby->Open(MT9D111_GPIO_STANDBY, GPIO_DIR_OUTPUT))
     {
-        is_open = true;
+        if (this->HardReset())
+        {
+            is_open = true;
 
-        return true;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     else
     {
@@ -80,10 +94,76 @@ bool MT9D111::Open(const char *dev_adr)
 bool MT9D111::Close()
 {
     delete i2c;
+    delete reset;
+    delete standby;
 
     is_open = false;
 
     return true;
+}
+
+bool MT9D111::HardReset()
+{
+    if (!standby->Set(false))
+    {
+        return false;
+    }
+
+    if (!reset->Set(false))
+    {
+        return false;
+    }
+
+    usleep(100);    // 100 us
+
+    if (!reset->Set(true))
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool MT9D111::SoftReset()
+{
+    // Bypass the PLL
+    if (!this->WriteReg(MT9D111_REG_CLOCK_CONTROL, 0xA000))
+    {
+        return false;
+    }
+
+    // Perform MCU reset
+    if (!this->WriteReg(MT9D111_REG_ASSERT_STROBE_T3, 0x0501))
+    {
+        return false;
+    }
+
+    // Enable soft reset
+    if (!this->WriteReg(MT9D111_REG_RESET, 0x0021))
+    {
+        return false;
+    }
+
+    // Disable soft reset
+    if (!this->WriteReg(MT9D111_REG_RESET, 0x0000))
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool MT9D111::Reset(uint8_t type)
+{
+    switch(type)
+    {
+        case MT9D111_RESET_HARD:
+            return this->HardReset();
+        case MT9D111_RESET_SOFT:
+            return this->SoftReset();
+        default:
+            return this->HardReset();
+    }
 }
 
 bool MT9D111::Config()
