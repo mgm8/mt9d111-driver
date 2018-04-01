@@ -276,7 +276,7 @@ struct Register
  *                                01 - Row Skip 4x
  *                                10 - Row Skip 8x
  *                                11 - Row Skip 16x
- *                                See “Column and Row Skip” on page 125 for more information.
+ *                                See "Column and Row Skip" on page 125 for more information.
  * 
  * Bit 1 - Mirror Columns: Read out columns from right to left (mirrored). When set, column readout starts from column (column
  * start + column size) and continues down to (column start + 1). When clear, readout starts at column start and continues to (column
@@ -289,52 +289,157 @@ struct Register
 #define MT9D111_REG_READ_MODE_B                     0x20
 
 /**
+ * Bit 15 - Binning-Context A: When read mode context A is selected (R0xF2:0[3] = 0):
+ *                             0 - Normal operation.
+ *                             1 - Binning enabled. See "Binning" on page 127.
+ *
+ * Bit 10 - Use 1 ADC-Context A: When read mode context A is selected (R0xF2:0[3] = 0):
+ *                               0 - Use both ADCs to achieve maximum speed.
+ *                               1 - Use one ADC to reduce power. Maximum readout frequency is now half of the master clock, and the pixel
+ *                               clock is automatically adjusted as described for the pixel clock speed register.
+ *
+ * Bit 7 - Column Skip Enable-Context A: When read mode context A is selected (R0xF2:0[3] = 0):
+ *                                       1 - Enable column skip.
+ *                                       0 - Normal readout.
+ *
+ * Bits 6:5 - Columns Skip-Context A: When read mode context A is selected (R0xF2:0[3] = 0) and column skip is enabled (bit 7 = 1):
+ *                                    00 - Column Skip 2x
+ *                                    01 - Column Skip 4x
+ *                                    10 - Column Skip 8x
+ *                                    11 - Column Skip 16x
+ *                                    See "Column and Row Skip" on page 125 for more information.
+ *
+ * Bit 4 - Row Skip Enalbe-Context A: When read mode context A is selected (R0xF2:0[3] = 0):
+ *                                    1 - Enable row skip.
+ *                                    0 - Normal readout.
+ *
+ * Bits 3:2 - Row Skip-Context A: When read mode context A is selected (R0xF2:0[3] = 0) and Row skip is enabled (bit 4 = 1):
+ *                                00 - Row Skip 2x
+ *                                01 - Row Skip 4x
+ *                                10 - Row Skip 8x
+ *                                11 - Row Skip 16x
+ *                                See "Column and Row Skip" on page 125 for more information.
  *
  */
 #define MT9D111_REG_READ_MODE_A                     0x21
 
 /**
+ * Bit 10 - Number of Dark Columns: The MT9D111 has 40 dark columns. 1 - Read out 36 dark columns (4-39). Ignored during binning,
+ *                                  where all 40 dark columns are used. 0 - Read out 20 dark columns (4-23).
  *
+ * Bit 9 - Show Dark Columns: When set, the 20/36 (dependent on bit 10) dark columns are output before the active pixels in a line.
+ *                            There is an idle period of 2 pixels between readout of the dark columns and readout of the active image.
+ *                            Therefore, when set, LINE_VALID is asserted 22 pixel times earlier than normal, and the horizontal blanking
+ *                            time is decreased by the same amount.
+ *
+ * Bit 8 - Read Dark Columns: 1 - Enables the readout of dark columns for use in the row-wise noise correction algorithm. The number
+ *                                of columns used are 40 in binning mode, and otherwise determined by bit 10.
+ *
+ * Bit 7 - Show Dark Rows: When set, the programmed dark rows is output before the active window. FRAME_VALID is thus asserted earlier than
+ *                         normal. This has no effect on integration time or frame rate.
+ *
+ * Bit 6:4 - Dark Start Address: The start address for the dark rows within the 8 available rows (an offset of 4 is added to compensate
+ *                               for the guard pixels). Must be set so all dark rows read out falls in the address space 0:7.
+ * 
+ * Bit 3 - Reserved: Do not change from default value.
+ *
+ * Bits 2:0 - Num Dark Rows: A value of N causes (n + 1) dark rows to be read out at the start of each frame when dark row readout is
+ *                           enabled (bit 3).
  */
 #define MT9D111_REG_DARK_COL_ROWS                   0x22
 
 /**
+ * Bit 15 - FLASH: Reflects the current state of FLASH output.
  *
+ * Bit 14 - Triggered: Indicates that FLASH output is asserted for the current frame.
+ *
+ * Bit 13 - Xenon Flash: Enable Xenon flash. When set, FLASH output asserts for the programmed period (bits 7:0) during vertical blanking.
+ *                       This is achieved by keeping the integration time equal to one frame, and the pulse width less than the vertical
+ *                       blank time.
+ *
+ * Bits 12:11 - Frame Delay: Delay of the flash pulse measured in frames.
+ *
+ * Bit 10 - End of Reset: 1 - In Xenon mode the flash is triggered after the resetting of a frame.
+ *                        0 - In Xenon mode the flash is triggered after the readout of a frame.
+ *
+ * Bit 9 - Every Frame: 1 - Flash should be enabled every frame.
+ *                      0 - Flash should be enabled for one frame only.
+ *
+ * Bit 8 - LED Flash: Enable LED flash. When set, FLASH output asserts prior to the start of the resetting of a frame and remains asserted
+ *                    until the end of the readout of the frame.
+ *
+ * Bits 7:0 - Xenon Count: Length of FLASH pulse when Xenon flash is enabled. The value specifies the length in units of 1024*PIXCLK cycle
+ *                         increments. When the Xenon count is set to its maximum value (0xFF), the FLASH pulse is automatically truncated
+ *                         prior to the readout of the first row, giving the longest pulse possible.
  */
 #define MT9D111_REG_FLASH                           0x23
 
 /**
+ * Bit 15 - Extra Reset Enable: 0 - Only programmed window (set by R0x01:0 through R0x04:0) and black pixels are read.
+ *                              1 - Two additional rows are read and reset above and below programmed window to prevent blooming to active
+ *                              area.
  *
+ * Bit 14 - Next Row Reset: When set, and the integration time is less than one frame time, row (n + 1) is reset immediately prior to
+ *                          resetting row (n). This is intended to prevent blooming across rows under conditions of very high illumination.
+ *
+ * Bits 13:0 - Reserved: Do not change from default value.
  */
 #define MT9D111_REG_EXTRA_RESET                     0x24
 
 /**
- *
+ * Bit 15 - Xor LINE_VALID: 1 - LINE_VALID = "continuous" LINE_VALID XOR FRAME_VALID.
+ *                          0 - Normal LINE_VALID (default, no XORing of LINE_VALID). Ineffective if continuous LINE_VALID is set.
+ * 
+ * Bit 14 - Continuous LINE_VALID: 1 - "Continuous" LINE_VALID (continue producing LINE_VALID during vertical blanking).
+ *                                 0 - Normal LINE_VALID (default, no LINE_VALID during vertical blanking).
  */
 #define MT9D111_REG_LINE_VALID_CONTROL              0x25
 
 /**
+ * Bit 7 - Show: The bottom dark rows are visible in the image if the bit is set.
  *
+ * Bits 6:4 - Start Address: Defines the start address within the 8 bottom dark rows.
+ *
+ * Bit 3 - Enable Readout: Enable readout of the bottom dark rows.
+ *
+ * Bits 2:0 - Number of Dark Rows: Defines the number of bottom dark rows to be used. (The number of rows used is
+ *                                 the specified value + 1.)
  */
 #define MT9D111_REG_BOTTOM_DARK_ROWS                0x26
 
 /**
+ * Bits 11:9 - Digital Gain: Total gain = (bit 9 + 1)*(bit 10 + 1)*(bit 11 + 1)*analog gain (each bit gives 2x gain).
  *
+ * Bits 8:7 - Analog Gain: Analog gain = (bit 8 + 1)*(bit 7 + 1)*initial gain (each bit gives 2x gain).
+ *
+ * Bits 6:0 - Initial Gain: Initial gain = bits 6:0*0.03125.
  */
 #define MT9D111_REG_GREEN_1_GAIN                    0x2B
 
 /**
+ * Bits 11:9 - Digital Gain: Total gain = (bit 9 + 1)*(bit 10 + 1)*(bit 11 + 1)*analog gain (each bit gives 2x gain).
  *
+ * Bits 8:7 - Analog Gain: Analog gain = (bit 8 + 1)*(bit 7 + 1)*initial gain (each bit gives 2x gain).
+ *
+ * Bits 6:0 - Initial Gain: Initial gain = bits [6:0]*0.03125.
  */
 #define MT9D111_REG_BLUE_GAIN                       0x2C
 
 /**
+ * Bits 11:9 - Digital Gain: Total gain = (bit 9 + 1)*(bit 10] + 1)*(bit 11 + 1)*analog gain (each bit gives 2x gain).
  *
+ * Bits 8:7 - Analog Gain: Analog gain = (bit 8 + 1)*(bit 7 + 1)*initial gain (each bit gives 2x gain).
+ *
+ * Bits 6:0 - Initial Gain: Initial gain = bits 6:0*0.03125.
  */
 #define MT9D111_REG_RED_GAIN                        0x2D
 
 /**
+ * Bits 11:9 - Digital Gain: Total gain = (bit 9 + 1)*(bit 10 + 1)*(bit 11 + 1)*analog gain (each bit gives 2x gain).
  *
+ * Bits 8:7 - Analog Gain: Analog gain = (bit 8 + 1)*(bit 7 + 1)*initial gain (each bit gives 2x gain).
+ *
+ * Bits 6:0 - Initial Gain: Initial gain = bits 6:0*0.03125.
  */
 #define MT9D111_REG_GREEN_2_GAIN                    0x2E
 
@@ -344,7 +449,31 @@ struct Register
 #define MT9D111_REG_GLOBAL_GAIN                     0x2F
 
 /**
+ * Bit 15 - Frame-wise Digital Correction: By default, the row noise is calculated and compensated for individually
+ *                                         for each color of each row. When this bit is set, the row noise is calculated
+ *                                         and applied for each color of each of the first two 2 (two pairs of values) and
+ *                                         the same values are applied to each subsequent row, so that new values are
+ *                                         calculated and applied once per frame.
  *
+ * Bits 14:12 - Gain Threshold: When the upper analog gain bits are equal to or larger than this threshold, the dark
+ *                              column average is used in the row noise correction algorithm. Otherwise, the subtracted
+ *                              value is determined by bit 11. This check is independently performed for each color, and
+ *                              is a means to turn off the black level algorithm for lower gains.
+ *
+ * Bit 11 - Use Black Level Average: 1 - Use black level frame average from the dark rows in the row noise correction
+ *                                       algorithm for low gains. This frame average was taken before the last adjustment
+ *                                       of the offset DAC for that frame, so it might be slightly off.
+ *                                   0 - Use mean of black level programmed threshold in the row noise correction algorithm
+ *                                       for low gains.
+ *
+ * Bit 10 - Enable Correction: 1 - Enable row noise cancellation algorithm. When this bit is set, the average value of the
+ *                                 dark columns read out is used as a correction for the whole row. The dark average is
+ *                                 subtracted from each pixel on the row, and then a constant is added (bits 9:0).
+ *                             0 - Normal operation.
+ *
+ * Bits 9:0 - Row Noise Constant: Constant used in the row noise cancellation algorithm. It should be set to the dark level
+ *                                targeted by the black level algorithm plus the noise expected between the averaged values
+ *                                of the dark columns. The default constant is set to 42 LSB.
  */
 #define MT9D111_REG_ROW_NOISE                       0x30
 
@@ -355,32 +484,70 @@ struct Register
 #define MT9D111_REG_BLACK_ROWS                      0x59
 
 /**
- *
+ * Bits 6:0 - Green1 Frame Average: The frame-averaged green1 black level that is used in the black level calibration algorithm.
  */
 #define MT9D111_REG_DARK_G1_AVERAGE                 0x5B
 
 /**
- *
+ * Bits 6:0 - Blue Frame Average: The frame-averaged blue black level that is used in the black level calibration algorithm.
  */
 #define MT9D111_REG_DARK_B_AVERAGE                  0x5C
 
 /**
- *
+ * Bits 6:0 - Red Frame Average: The frame-averaged red black level that is used in the black level calibration algorithm.
  */
 #define MT9D111_REG_DARK_R_AVERAGE                  0x5D
 
 /**
- *
+ * Bits 6:0 - Green2 Frame Average: The frame-averaged green2 black level that is used in the black level calibration algorithm.
  */
 #define MT9D111_REG_DARK_G2_AVERAGE                 0x5E
 
 /**
+ * Bits 14:8 - Upper Threshold: Upper threshold for targeted black level in ADC LSBs.
  *
+ * Bits 6:0 - Lower Threshold: Lower threshold for targeted black level in ADC LSBs.
  */
 #define MT9D111_REG_CALIB_THRESHOLD                 0x5F
 
 /**
+ * Bit 15 - Disable Rapid Sweep Mode: Disables the rapid sweep mode in the black level algorithm. The averaging mode remains enabled.
  *
+ * Bit 12 - Recalculate: When set, the rapid sweep mode is triggered if enabled, and the running frame average is reset to the
+ *                       current frame average. This bit is write - 1, but always reads back as "0".
+ *
+ * Bit 10 - Limit Rapid Sweep: 1 - Dark rows 8–11 are not used for the black level algorithm controlling the calibration value.
+ *                                 Instead, these rows are used to calculate dark averages that can be a starting point for the
+ *                                 digital frame-wise black level algorithm.
+ *                             0 - All dark rows can be used for the black level algorithm. This means that the internal average
+ *                                 might not correspond to the calibration value used for the frame, so the dark row average should
+ *                                 in this case not be used as the starting point for the frame-wise black level algorithm.
+ *
+ * Bit 9 - Freeze Calibration: When set, does not let the averaging mode of the black level algorithm change the calibration value.
+ *                             Use this with the feature in the frame-wise black level algorithm that allows you to trigger the rapid
+ *                             sweep mode when the dark column average gets away from the black level target.
+ *
+ * Bit 8 - Sweep Mode: When set, the calibration value is increased by one every frame, and all channels are the same. This can be
+ *                     used to get a ramp input to the ADC from the calibration DACs.
+ *
+ * Bits 7:5 - Frames To Average Over: Two to the power of this value determines how many frames to average when the black level
+ *                                    algorithm is in the averaging mode. In this mode, the running frame average is calculated from
+ *                                    the following formula: Running frame ave = old running frame ave (old running frame ave)/2^n +
+ *                                    (new frame ave)/ 2^n .
+ *
+ * Bit 4 - Step Size Forced To 1: When set, the step size is forced to 1 for the rapid sweep algorithm. Default operation (0) is to
+ *                                start at a higher step size when in rapid sweep mode, to converge faster to the correct value
+ *
+ * Bit 3 - Switch Calibration Values: When set, the calibration values applied to the two channels are switched. This is not
+ *                                    recommended and should not be used.
+ *
+ * Bit 2 - Same Red/Blue: When this bit is set, the same calibration value is used for red and blue pixels: Calib blue = calib red.
+ *
+ * Bit 1 - Same Green: When this bit is set, the same calibration value is used for all green pixels: Calib green2 = calib green1.
+ *
+ * Bit 0 - Manual Override: Manual override of black level correction.
+ *                          1 - Override automatic black level correction with programmed values. (R0x61:0–R0x64:0).
+ *                          0 - Normal operation (default).
  */
 #define MT9D111_REG_CALIB_CONTROL                   0x60
 
@@ -419,22 +586,49 @@ struct Register
 #define MT9D111_REG_CALIB_GREEN_2                   0x64
 
 /**
+ * Bit 15 - PLL Bypass: 1 - Bypass the PLL. Use CLKIN input signal as master clock.
+ *                      0 - Use clock produced by PLL as master clock.
  *
+ * Bit 14 - PLL Power-Down: 1 - Keep PLL in power-down to save power (default).
+ *                          0 - PLL powered-up.
+ *
+ * Bit 13 - Power-Down PLL During Standby: This register only has an effect when bit 14 = 0.
+ *                                         1 - Turn off PLL (power-down) during standby to save power (default).
+ *                                         0 - PLL powered-up during standby.
+ *
+ * Bit 2 - clk_newrow: Force clk_newrow to be on continuously.
+ *
+ * Bit 1 - clk_newframe: Force clk_newframe to be on continuously.
+ *
+ * Bit 0 - clk_ship: Force clk_ship to be on continuously.
  */
 #define MT9D111_REG_CLOCK_CONTROL                   0x65
 
 /**
+ * Bits 15:8 - M: M value for PLL must be 16 or higher.
  *
+ * Bits 5:0 - N: N value for PLL.
  */
 #define MT9D111_REG_PLL_CONTROL_1                   0x66
 
 /**
+ * Bits 11:8 - Reserved: Do not change from default value.
  *
+ * Bits 6:0 - P: P value for PLL.
  */
 #define MT9D111_REG_PLL_CONTROL_2                   0x67
 
 /**
+ * Bit 15 - Global Reset Enable: Enter global reset. This bit is write - 1 only and is always read 0.
  *
+ * Bit 2 - Global Reset Flash Control: 1 - Flash is de-asserted at end of readout.
+ *                                     0 - Flash is de-asserted by R0xB6:0 (de-assert flash).
+ *
+ * Bit 1 - Global Reset Strobe Control: 1 - Strobe is de-asserted at end of readout.
+ *                                      0 - Strobe is de-asserted by R0xC4:0 (de-assert strobe).
+ *
+ * Bit 0 - Global Reset Readout Control: 1 - Start of readout is controlled by falling edge of GRST_CTR.
+ *                                       0 - Start of readout is controlled by R0xC2:0 (start readout time).
  */
 #define MT9D111_REG_GLOBAL_SHUTTER_CONTROL          0xC0
 
