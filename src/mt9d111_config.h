@@ -40,6 +40,10 @@
 
 #include "mt9d111_reg.h"
 
+// PLL values
+#define MT9D111_REG_PLL_CONTROL_1_VAL           0x1000
+#define MT9D111_REG_PLL_CONTROL_2_VAL           0x0500
+
 /**
  * \var reg_default_vals
  * 

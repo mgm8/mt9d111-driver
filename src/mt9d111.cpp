@@ -188,6 +188,42 @@ bool MT9D111::SoftStandby(bool s)
     return true;
 }
 
+bool MT9D111::EnablePLL()
+{
+    // Program PLL frequency settings
+    if (!(this->WriteReg(MT9D111_REG_PLL_CONTROL_1, MT9D111_REG_PLL_CONTROL_1_VAL) and
+        this->WriteReg(MT9D111_REG_PLL_CONTROL_2, MT9D111_REG_PLL_CONTROL_2_VAL)))
+    {
+        return false;
+    }
+
+    // Power up PLL
+    uint16_t reg_val;
+    if (!this->ReadReg(MT9D111_REG_CLOCK_CONTROL, &reg_val))
+    {
+        reg_val &= ~(1 << 14);
+        if (!this->WriteReg(MT9D111_REG_CLOCK_CONTROL, reg_val))
+        {
+            return false;
+        }
+    }
+
+    // Wait for PLL settling time
+    usleep(500);
+
+    // Turn off PLL bypass
+    if (!this->ReadReg(MT9D111_REG_CLOCK_CONTROL, &reg_val))
+    {
+        reg_val &= ~(1 << 15);
+        if (!this->WriteReg(MT9D111_REG_CLOCK_CONTROL, reg_val))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool MT9D111::Reset(uint8_t type)
 {
     switch(type)
