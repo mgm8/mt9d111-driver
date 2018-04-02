@@ -53,6 +53,10 @@
 #define MT9D111_RESET_HARD              0
 #define MT9D111_RESET_SOFT              1
 
+// Standby types
+#define MT9D111_STANDBY_HARD            0
+#define MT9D111_STANDBY_SOFT            1
+
 /**
  * \class MT9D111
  *
@@ -109,6 +113,22 @@ class MT9D111
          * \return TRUE/FALSE if successful or not.
          */
         bool SoftReset();
+        /**
+         * \brief Enables/Disables the hard standby.
+         *
+         * \param s is TRUE/FALSE to enable or disable the hard standby.
+         *
+         * \return TRUE/FALSE if successful or not.
+         */
+        bool HardStandby(bool s);
+        /**
+         * \brief Enables/Disables the soft standby.
+         *
+         * \param s is TRUE/FALSE to enable or disable the soft standby.
+         *
+         * \return TRUE/FALSE if successful or not.
+         */
+        bool SoftStandby(bool s);
     public:
         /**
          * \brief Constructor without parameters.
@@ -160,6 +180,95 @@ class MT9D111
          * \return TRUE/FALSE if the configuration process was successful or not.
          */
         bool Config();
+        /**
+         * \brief Enables the standby mode.
+         *
+         * Standby mode can be activated by two methods:
+         *     - 1) The first method is to assert STANDBY, which places the chip into hard standby. Turning
+         *          off the input clock (EXTCLK) reduces the standby power consumption to the maximum
+         *          specification of 100 uA at 55 oC. There is no serial interface access for hard standby.
+         *     - 2) The second method is activated through the serial interface by setting R0x0D:0[2] = 1 known
+         *          as the soft standby. As long as the input clock remains on, the chip will allow access
+         *          through the serial interface in soft standby.
+         *     .
+         *
+         * Standby should only be activated from the preview mode (context A), and not the capture mode
+         * (context B). In addition, the PLL state (off/bypassed/activated) is recorded at the time of firmware
+         * standby (seq.cmd = 3) and restored once the camera is out of firmware standby. In both hard and soft
+         * standby scenarios, internal clocks are turned off and the analog circuitry is put into a low power
+         * state. Exit from standby must go through the same interface as entry to standby. If the input clock
+         * is turned off, the clock must be restarted before leaving standby.
+         *
+         * To Enter Standby
+         *     - 1) To prepare for standby:
+         *              - a) Issue the STANDBY command to the firmware by setting seq.cmd = 3
+         *              - b) Poll seq.state until the current state is in standby (seq.state = 9)
+         *              - c) Bypass the PLL if used by setting R0x65:0[15] = 1
+         *              .
+         *     - 2) To prevent additional leakage current during standby:
+         *              - a) Set R0x0A:1[7] = 1 to prevent elevated standby current. It will control the
+         *                   bidirectional pads D OUT , LINE_VALID, FRAME_VALID, PIXCLK.
+         *              - b) If the outputs are allowed to be left in an unknown state while in standby, the
+         *                   current can increase. Therefore, either have the receiver hold the camera outputs
+         *                   HIGH or LOW, or allow the camera to drive its outputs to a known state by setting
+         *                   R0x0D:0[6] = 1. R0x0D:0[4] needs to remain at the default value of "0". In this case,
+         *                   some pads will be HIGH while some will be LOW. For dual camera systems, at least
+         *                   one camera has to be driving the bus at any time so that the outputs will not be
+         *                   left floating.
+         *              - c) Configure internal reserved I/O as outputs and drive LOW by the setting the respective
+         *                   bit to "0" in the reserved I/O variables 0x1078, 0x1079, 0x1070, and 0x1071 (accessed
+         *                   through R0xC6:1 and R0xC8:1). The following settings should be used:
+         *                       - i)    R0xC6:1 = 0x9078
+         *                       - ii)   R0xC8:1 = 0x0000
+         *                       - iii)  R0xC6:1 = 0x9079
+         *                       - iv)   R0xC8:1 = 0x0000
+         *                       - v)    R0xC6:1 = 0x9070
+         *                       - vi)   R0xC8:1 = 0x0000
+         *                       - vii)  R0xC6:1 = 0x9071
+         *                       - viii) R0xC8:1 = 0x0000
+         *                       .
+         *              .
+         *     - 3) To put the camera in standby: Assert STANDBY = 1. Optionally, stop the EXTCLK clock to minimize
+         *          the standby current specified in the MT9D131 data sheet. For soft standby, program standby
+         *          R0x0D:0[2] = 1 instead.
+         *     .
+         *
+         * Reference: MT9D131 Developer Guide. Standby Sequence. Page 13.
+         *
+         * \param type is the type of standby to enter (MT9D111_STANDBY_HARD or MT9D111_STANDBY_SOFT).
+         *
+         * \return TRUE/FALSE if successful or not.
+         */
+        bool EnterStandby(uint8_t type=MT9D111_STANDBY_HARD);
+        /**
+         * \brief Disables the stanby mode.
+         *
+         * See "EnterStandby" method for more details about the standby mode.
+         *
+         * To Exit Standby
+         *     - 1) De-assert standby:
+         *              - a) Provide EXTCLK clock, if it was disabled when using STANDBY.
+         *              - b) De-assert STANDBY = 0 if hard standby was used. Or program R0x0D:0[2] = 0 if soft
+         *                   standby was used.
+         *              .
+         *     - 2) Reconfiguring output pads:
+         *              - a) Go to preview.
+         *              - b) Issue a GO_PREVIEW command to the firmware by setting seq.cmd = 1.
+         *              - c) Poll seq.state until the current state is preview (seq.state = 3).
+         *              .
+         *     - 3) The following timing requirements should be met to turn off EXTCLK during hard standby:
+         *              - a) After the asserting standby, wait 10 clock cycles before stopping the clock.
+         *              - b) Restart the clock 24 clock cycles before de-asserting standby.
+         *              .
+         *     .
+         *
+         * Reference: MT9D131 Developer Guide. Standby Sequence. Page 13.
+         *
+         * \param type is the type of standby to enter (MT9D111_STANDBY_HARD or MT9D111_STANDBY_SOFT).
+         *
+         * \return TRUE/FALSE if successful or not.
+         */
+        bool LeaveStandby(uint8_t type=MT9D111_STANDBY_HARD);
         /**
          * \brief Reads the value of a register of the device.
          *

@@ -153,6 +153,41 @@ bool MT9D111::SoftReset()
     return true;
 }
 
+bool MT9D111::HardStandby(bool s)
+{
+    return standby->Set(s);
+}
+
+bool MT9D111::SoftStandby(bool s)
+{
+    // Getting the current value from the MT9D111_REG_RESET register
+    uint16_t reg_val;
+    if (!this->ReadReg(MT9D111_REG_RESET, &reg_val))
+    {
+        return false;
+    }
+
+    // Changing the STANDBY bit state
+    if (s)
+    {
+        // Enabling standby
+        reg_val |= 1 << 2;  // STANDBY = Bit 2
+    }
+    else
+    {
+        // Disabling standby
+        reg_val &= ~(1 << 2);
+    }
+
+    // Writing the new value to the register
+    if (!this->WriteReg(MT9D111_REG_RESET, reg_val))
+    {
+        return false;
+    }
+
+    return true;
+}
+
 bool MT9D111::Reset(uint8_t type)
 {
     switch(type)
@@ -177,6 +212,32 @@ bool MT9D111::Config()
     }
 
     return true;
+}
+
+bool MT9D111::EnterStandby(uint8_t type)
+{
+    switch(type)
+    {
+        case MT9D111_STANDBY_HARD:
+            return this->HardStandby(true);
+        case MT9D111_STANDBY_SOFT:
+            return this->SoftStandby(true);
+        default:
+            return this->HardStandby(true);
+    }
+}
+
+bool MT9D111::LeaveStandby(uint8_t type)
+{
+    switch(type)
+    {
+        case MT9D111_STANDBY_HARD:
+            return this->HardStandby(false);
+        case MT9D111_STANDBY_SOFT:
+            return this->SoftStandby(false);
+        default:
+            return this->HardStandby(false);
+    }
 }
 
 bool MT9D111::ReadReg(uint8_t adr, uint16_t *val)
