@@ -70,6 +70,26 @@ class MT9D111
         GPIO *reset;    /**< RESET pin. */
         GPIO *standby;  /**< STANDBY pin. */
         /**
+         * \brief Reads the value of a bit from a register.
+         *
+         * \param adr is the address of the register.
+         * \param bit is the bit position to read.
+         * \param state is a pointer to store the bit value.
+         *
+         * \return TRUE/FALSE if the reading was successful or not.
+         */
+        bool ReadRegBit(uint8_t adr, uint8_t bit, bool *state);
+        /**
+         * \brief Changes a register bit.
+         *
+         * \param adr is the address of the register.
+         * \param bit is the bit position to write.
+         * \param state is the new state of the bit position (high or low/true or false).
+         *
+         * \return TRUE/FALSE if the writing was successful or not.
+         */
+        bool WriteRegBit(uint8_t adr, uint8_t bit, bool state);
+        /**
          * \brief Hard resets the sensor.
          *
          * After power-up, a hard reset is required. Assuming all supplies are stable,

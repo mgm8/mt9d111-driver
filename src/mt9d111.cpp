@@ -102,6 +102,42 @@ bool MT9D111::Close()
     return true;
 }
 
+bool MT9D111::ReadRegBit(uint8_t adr, uint8_t bit, bool *state)
+{
+    uint16_t reg_val;
+    if (!this->ReadReg(adr, &reg_val))
+    {
+        return false;
+    }
+
+    uint16_t comp = 0;
+    comp |= 1 << bit;
+
+    *state = (reg_val & comp)? true:false;
+
+    return true;
+}
+
+bool MT9D111::WriteRegBit(uint8_t adr, uint8_t bit, bool state)
+{
+    uint16_t reg_val;
+    if (!this->ReadReg(adr, &reg_val))
+    {
+        return false;
+    }
+
+    if (state)
+    {
+        reg_val |= 1 << bit;
+    }
+    else
+    {
+        reg_val &= (1 << bit);
+    }
+
+    return this->WriteReg(adr, reg_val);
+}
+
 bool MT9D111::HardReset()
 {
     if (!standby->Set(false))
@@ -160,32 +196,8 @@ bool MT9D111::HardStandby(bool s)
 
 bool MT9D111::SoftStandby(bool s)
 {
-    // Getting the current value from the MT9D111_REG_RESET register
-    uint16_t reg_val;
-    if (!this->ReadReg(MT9D111_REG_RESET, &reg_val))
-    {
-        return false;
-    }
-
     // Changing the STANDBY bit state
-    if (s)
-    {
-        // Enabling standby
-        reg_val |= 1 << 2;  // STANDBY = Bit 2
-    }
-    else
-    {
-        // Disabling standby
-        reg_val &= ~(1 << 2);
-    }
-
-    // Writing the new value to the register
-    if (!this->WriteReg(MT9D111_REG_RESET, reg_val))
-    {
-        return false;
-    }
-
-    return true;
+    return this->WriteRegBit(MT9D111_REG_RESET, 2, s);
 }
 
 bool MT9D111::EnablePLL()
@@ -198,27 +210,18 @@ bool MT9D111::EnablePLL()
     }
 
     // Power up PLL
-    uint16_t reg_val;
-    if (!this->ReadReg(MT9D111_REG_CLOCK_CONTROL, &reg_val))
+    if (!this->WriteRegBit(MT9D111_REG_CLOCK_CONTROL, 14, false))
     {
-        reg_val &= ~(1 << 14);
-        if (!this->WriteReg(MT9D111_REG_CLOCK_CONTROL, reg_val))
-        {
-            return false;
-        }
+        return false;
     }
 
     // Wait for PLL settling time
     usleep(500);
 
     // Turn off PLL bypass
-    if (!this->ReadReg(MT9D111_REG_CLOCK_CONTROL, &reg_val))
+    if (!this->WriteRegBit(MT9D111_REG_CLOCK_CONTROL, 15, false))
     {
-        reg_val &= ~(1 << 15);
-        if (!this->WriteReg(MT9D111_REG_CLOCK_CONTROL, reg_val))
-        {
-            return false;
-        }
+        return false;
     }
 
     return true;
