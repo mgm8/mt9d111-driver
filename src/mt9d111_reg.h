@@ -48,6 +48,7 @@
 struct Register
 {
     uint8_t     address;    /**< Register address. */
+    uint8_t     page;       /**< Register page number. */
     uint16_t    value;      /**< Register value. */
 };
 
@@ -653,7 +654,7 @@ struct Register
 
 /**
  * These 16 bits are compared to the upper bits of a 24-bit counter, which starts counting master clocks when global reset starts.
- * When this value is reached, the strobe is de-asserted if strobe control is “0” (R0xC0:0[1]).
+ * When this value is reached, the strobe is de-asserted if strobe control is "0" (R0xC0:0[1]).
  */
 #define MT9D111_REG_DEASSERT_STROBE_T4              0xC4
 
@@ -665,13 +666,13 @@ struct Register
 
 /**
  * Bits 15:0 - De-assert Flash Time: These 16 bits are compared to the upper bits of a 24-bit Time counter, which starts counting
- * master clocks when global reset starts. When this value is reached, the flash is de-asserted if flash control is “0” (R0xC0:0[2]).
+ * master clocks when global reset starts. When this value is reached, the flash is de-asserted if flash control is "0" (R0xC0:0[2]).
  */
 #define MT9D111_REG_DEASSERT_FLASH                  0xC6
 
 /**
  * Bit 9:0 - AIN3 Sample: Contains sample of AIN3 if external signal sampling is enabled (R0xE3:0[15] = 1).
- * See “Analog Inputs AIN1–AIN3” on page 134.
+ * See "Analog Inputs AIN1–AIN3" on page 134.
  */
 #define MT9D111_REG_EXTERNAL_SAMPLE_1               0xE0
 
@@ -696,14 +697,14 @@ struct Register
 #define MT9D111_REG_EXTERNAL_SAMPLING_CONTROL       0xE3
 
 /**
- * Bits 2:0 - Page Register: Must be kept at “0” to be able to write/read from sensor. Used in SOC to access other pages with
+ * Bits 2:0 - Page Register: Must be kept at "0" to be able to write/read from sensor. Used in SOC to access other pages with
  * registers.
  */
 #define MT9D111_REG_PAGE_REGISTER                   0xF0
 
 /**
  * Bits 15:0 - Bytewise Address: Special address to perform 16-bit reads and writes to the sensor in 8-bit chunks.
- * See “8-Bit Write Sequence” on page 183.
+ * See "8-Bit Write Sequence" on page 183.
  */
 #define MT9D111_REG_BYTEWISE_ADDRESS                0xF1
 
@@ -731,6 +732,207 @@ struct Register
  * Bits 15:0 - Reserved: Reserved register (Default value: 0x1519).
  */
 #define MT9D111_REG_RESERVED_2                      0xFF
+//! \}
+
+/**
+ * \brief IFP Registers, Page 1.
+ *
+ * Reference: Table 6: IFP Registers, Page 1; "MT9D111 - 1/3.2-Inch 2-Megapixel SOC Digital Image Sensor Registers".
+ * \{
+ */
+#define MT9D111_REG_COLOR_PIPELINE_CONTROL                                                      0x08
+#define MT9D111_REG_FACTORY_BYPASS                                                              0x09
+#define MT9D111_REG_PAD_SLEW                                                                    0x0A
+#define MT9D111_REG_INTERNAL_CLOCK_CONTROL                                                      0x0B
+#define MT9D111_REG_X0_COORDINATE_FOR_CROP_WINDOW                                               0x11
+#define MT9D111_REG_X1_COORDINATE_FOR_CROP_WINDOW_1                                             0x12
+#define MT9D111_REG_Y0_COORDINATE_FOR_CROP_WINDOW                                               0x13
+#define MT9D111_REG_Y1_COORDINATE_FOR_CROP_WINDOW_1                                             0x14
+#define MT9D111_REG_DECIMATOR_CONTROL                                                           0x15
+#define MT9D111_REG_WEIGHT_FOR_HORIZONTAL_DECIMATION                                            0x16
+#define MT9D111_REG_WEIGHT_FOR_VERTICAL_DECIMATION                                              0x17
+#define MT9D111_REG_LUMINANCE_RANGE_OF_PIX_CONSIDERED_IN_WB_STATS                               0x20
+#define MT9D111_REG_RIGHT_LEFT_COORDINATES_OF_AWB_MEASUREMENT_WINDOW                            0x2D
+#define MT9D111_REG_BOTTOM_TOP_COORDINATES_OF_AWB_MEASUREMENT_WINDOW                            0x2E
+#define MT9D111_REG_RED_CHROMIANCE_MEASURE_CALCULATED_BY_AWB                                    0x30
+#define MT9D111_REG_LUMINANCE_MEASURE_CALCULATED_BY_AWB                                         0x31
+#define MT9D111_REG_BLUE_CHROMIANCE_MEASURE_CALCULATED_BY_AWB                                   0x32
+#define MT9D111_REG_1D_APERTURE_CORRECTION_PARAMETERS                                           0x35
+#define MT9D111_REG_2D_APERTURE_CORRECTION_PARAMETERS                                           0x36
+#define MT9D111_REG_FILTERS                                                                     0x37
+#define MT9D111_REG_SECOND_BLACK_LEVEL                                                          0x3B
+#define MT9D111_REG_FIRST_BLACK_LEVEL                                                           0x3C
+#define MT9D111_REG_ENABLE_SUPPORT_FOR_PREVIEW_MODES                                            0x43
+#define MT9D111_REG_MIRRORS_SENSOR_REGISTER_0x20                                                0x44
+#define MT9D111_REG_MIRRORS_SENSOR_REGISTER_0xF2                                                0x45
+#define MT9D111_REG_MIRRORS_SENSOR_REGISTER_0x21                                                0x46
+#define MT9D111_REG_EDGE_THRESHOLD_FOR_INTERPOLATION                                            0x47
+#define MT9D111_REG_TEST_PATTERN                                                                0x48
+#define MT9D111_REG_TEST_PATTERN_R_MONOCHROME_VALUE                                             0x49
+#define MT9D111_REG_TEST_PATTERN_G_MONOCHROME_VALUE                                             0x4A
+#define MT9D111_REG_TEST_PATTERN_B_VALUE                                                        0x4B
+#define MT9D111_REG_DIGITAL_GAIN_2                                                              0x4E
+#define MT9D111_REG_COLOR_CORRECTION_MATRIX_EXPONENTS_FOR_C11_C22                               0x60
+#define MT9D111_REG_COLOR_CORRECTION_MATRIX_EXPONENTS_FOR_C22_C33                               0x61
+#define MT9D111_REG_COLOR_CORRECTION_MATRIX_ELEMENTS_1_AND_2_MANTISSAS                          0x62
+#define MT9D111_REG_COLOR_CORRECTION_MATRIX_ELEMENTS_3_AND_4_MANTISSAS                          0x63
+#define MT9D111_REG_COLOR_CORRECTION_MATRIX_ELEMENTS_5_AND_6_MANTISSAS                          0x64
+#define MT9D111_REG_COLOR_CORRECTION_MATRIX_ELEMENTS_7_AND_8_MANTISSAS                          0x65
+#define MT9D111_REG_COLOR_CORRECTION_MATRIX_ELEMENT_9_MANTISSA_AND_SIGNS                        0x66
+#define MT9D111_REG_DIGITAL_GAIN_1_FOR_RED_PIXELS                                               0x6A
+#define MT9D111_REG_DIGITAL_GAIN_1_FOR_GREEN_1_PIXELS                                           0x6B
+#define MT9D111_REG_DIGITAL_GAIN_1_FOR_GREEN_2_PIXELS                                           0x6C
+#define MT9D111_REG_DIGITAL_GAIN_1_FOR_BLUE_PIXELS                                              0x6D
+#define MT9D111_REG_DIGITAL_GAIN_1_FOR_ALL_COLORS                                               0x6E
+#define MT9D111_REG_BOUNDARIES_OF_FLICKER_MEASUREMENT_WINDOW_LEFT_WIDTH                         0x7A
+#define MT9D111_REG_BOUNDARIES_OF_FLICKER_MEASUREMENT_WINDOW_TOP_HEIGHT                         0x7B
+#define MT9D111_REG_FLICKER_MEASUREMENT_WINDOW_SIZE                                             0x7C
+#define MT9D111_REG_MEASURE_OF_AVERAGE_LUMINANCE_IN_FLICKER_MEASUREMENT_WINDOW                  0x7D
+#define MT9D111_REG_BLANK_FRAMES                                                                0x96
+#define MT9D111_REG_OUTPUT_FORMAT_CONFIGURATION                                                 0x97
+#define MT9D111_REG_OUTPUT_FORMAT_TEST                                                          0x98
+#define MT9D111_REG_LINE_COUNT                                                                  0x99
+#define MT9D111_REG_FRAME_COUNT                                                                 0x9A
+#define MT9D111_REG_SPECIAL_EFFECTS                                                             0xA4
+#define MT9D111_REG_SEPIA_CONSTANTS                                                             0xA5
+#define MT9D111_REG_GAMMA_CURVE_KNEES_0_AND_1                                                   0xB2
+#define MT9D111_REG_GAMMA_CURVE_KNEES_2_AND_3                                                   0xB3
+#define MT9D111_REG_GAMMA_CURVE_KNEES_4_AND_5                                                   0xB4
+#define MT9D111_REG_GAMMA_CURVE_KNEES_6_AND_7                                                   0xB5
+#define MT9D111_REG_GAMMA_CURVE_KNEES_8_AND_9                                                   0xB6
+#define MT9D111_REG_GAMMA_CURVE_KNEES_10_AND_11                                                 0xB7
+#define MT9D111_REG_GAMMA_CURVE_KNEES_12_AND_13                                                 0xB8
+#define MT9D111_REG_GAMMA_CURVE_KNEES_14_AND_15                                                 0xB9
+#define MT9D111_REG_GAMMA_CURVE_KNEES_16_AND_17                                                 0xBA
+#define MT9D111_REG_GAMMA_CURVE_KNEE_18                                                         0xBB
+#define MT9D111_REG_YUV_YCbCr_CONTROL                                                           0xBE
+#define MT9D111_REG_Y_RGB_OFFSET                                                                0xBF
+#define MT9D111_REG_MICROCONTROLLER_BOOT_MODE                                                   0xC3
+#define MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS                                            0xC6
+#define MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA                                               0xC8
+#define MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA_USING_BURST_TWO_WIRE_SERIAL_INTERFACE_ACCESS  0xC9
+//! \}
+
+/**
+ * \brief IFP Registers, Page 2.
+ *
+ * Reference: Table 7: IFP Registers, Page 2; "MT9D111 - 1/3.2-Inch 2-Megapixel SOC Digital Image Sensor Registers".
+ * \{
+ */
+#define MT9D111_REG_JPEG_CONTROL                                                        0x00
+#define MT9D111_REG_JPEG_STATUS_0                                                       0x02
+#define MT9D111_REG_JPEG_STATUS_1                                                       0x03
+#define MT9D111_REG_JPEG_STATUS_2                                                       0x04
+#define MT9D111_REG_JPEG_FRONT_END_CONFIG                                               0x05
+#define MT9D111_REG_JPEG_CORE_CONFIG                                                    0x06
+#define MT9D111_REG_JPEG_ENCODER_BYPASS                                                 0x0A
+#define MT9D111_REG_OUTPUT_CONFIG                                                       0x0D
+#define MT9D111_REG_OUTPUT_PCLK1_AND_PCLK2_CONFIG                                       0x0E
+#define MT9D111_REG_OUTPUT_PCLK3_CONFIG                                                 0x0F
+#define MT9D111_REG_SPOOF_FRAME_WIDTH                                                   0x10
+#define MT9D111_REG_SPOOF_FRAME_HEIGHT                                                  0x11
+#define MT9D111_REG_SPOOF_FRAME_LINE_TIMING                                             0x12
+#define MT9D111_REG_JPEG_RAM_TEST_CONTROL_REGISTER                                      0x1D
+#define MT9D111_REG_JPEG_INDIRECT_ACCESS_CONTROL                                        0x1E
+#define MT9D111_REG_JPEG_INDIRECT_ACCESS_DATA                                           0x1F
+#define MT9D111_REG_BOUNDARIES_OF_FIRST_AF_MEASUREMENT_WINDOW_TOP_LEFT                  0x40
+#define MT9D111_REG_BOUNDARIES_OF_FIRST_AF_MEASUREMENT_WINDOW_HEIGHT_WIDTH              0x41
+#define MT9D111_REG_AF_MEASUREMENT_WINDOW_SIZE                                          0x42
+#define MT9D111_REG_AVERAGE_LUMINANCE_IN_AF_WINDOWS_W12_AND_W11                         0x43
+#define MT9D111_REG_AVERAGE_LUMINANCE_IN_AF_WINDOWS_W14_AND_W13                         0x44
+#define MT9D111_REG_AVERAGE_LUMINANCE_IN_AF_WINDOWS_W22_AND_W21                         0x45
+#define MT9D111_REG_AVERAGE_LUMINANCE_IN_AF_WINDOWS_W24_AND_W23                         0x46
+#define MT9D111_REG_AVERAGE_LUMINANCE_IN_AF_WINDOWS_W32_AND_W31                         0x47
+#define MT9D111_REG_AVERAGE_LUMINANCE_IN_AF_WINDOWS_W34_AND_W33                         0x48
+#define MT9D111_REG_AVERAGE_LUMINANCE_IN_AF_WINDOWS_W42_AND_W41                         0x49
+#define MT9D111_REG_AVERAGE_LUMINANCE_IN_AF_WINDOWS_W44_AND_W43                         0x4A
+#define MT9D111_REG_AF_FILTER_1_COEFFICIENTS                                            0x4B
+#define MT9D111_REG_AF_FILTER_1_CONFIG                                                  0x4C
+#define MT9D111_REG_AF_FILTER_1_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W12_AND_W11    0x4D
+#define MT9D111_REG_AF_FILTER_1_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W14_AND_W13    0x4E
+#define MT9D111_REG_AF_FILTER_1_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W22_AND_W21    0x4F
+#define MT9D111_REG_AF_FILTER_1_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W24_AND_W23    0x50
+#define MT9D111_REG_AF_FILTER_1_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W32_AND_W31    0x51
+#define MT9D111_REG_AF_FILTER_1_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W34_AND_W33    0x52
+#define MT9D111_REG_AF_FILTER_1_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W42_AND_W41    0x53
+#define MT9D111_REG_AF_FILTER_1_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W44_AND_W43    0x54
+#define MT9D111_REG_AF_FILTER_2_COEFFICIENTS                                            0x55
+#define MT9D111_REG_AF_FILTER_2_CONFIG                                                  0x56
+#define MT9D111_REG_AF_FILTER_2_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W12_AND_W11    0x57
+#define MT9D111_REG_AF_FILTER_2_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W14_AND_W13    0x58
+#define MT9D111_REG_AF_FILTER_2_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W22_AND_W21    0x59
+#define MT9D111_REG_AF_FILTER_2_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W24_AND_W23    0x5A
+#define MT9D111_REG_AF_FILTER_2_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W32_AND_W31    0x5B
+#define MT9D111_REG_AF_FILTER_2_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W34_AND_W33    0x5C
+#define MT9D111_REG_AF_FILTER_2_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W42_AND_W41    0x5D
+#define MT9D111_REG_AF_FILTER_2_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W44_AND_W43    0x5E
+#define MT9D111_REG_LENS_CORRECTION_CONTROL                                             0x80
+#define MT9D111_REG_ZONE_BOUNDARIES_X1_AND_X2                                           0x81
+#define MT9D111_REG_ZONE_BOUNDARIES_X0_AND_X3                                           0x82
+#define MT9D111_REG_ZONE_BOUNDARIES_X4_AND_X5                                           0x83
+#define MT9D111_REG_ZONE_BOUNDARIES_Y1_AND_Y2                                           0x84
+#define MT9D111_REG_ZONE_BOUNDARIES_Y0_AND_Y3                                           0x85
+#define MT9D111_REG_ZONE_BOUNDARIES_Y4_AND_Y5                                           0x86
+#define MT9D111_REG_CENTER_OFFSET                                                       0x87
+#define MT9D111_REG_FX_FOR_RED_COLOR_AT_THE_FIRST_PIXEL_OF_THE_ARRAY                    0x88
+#define MT9D111_REG_FX_FOR_GREEN_COLOR_AT_THE_FIRST_PIXEL_OF_THE_ARRAY                  0x89
+#define MT9D111_REG_FX_FOR_BLUE_COLOR_AT_THE_FIRST_PIXEL_OF_THE_ARRAY                   0x8A
+#define MT9D111_REG_FY_FOR_RED_COLOR_AT_THE_FIRST_PIXEL_OF_THE_ARRAY                    0x8B
+#define MT9D111_REG_FY_FOR_GREEN_COLOR_AT_THE_FIRST_PIXEL_OF_THE_ARRAY                  0x8C
+#define MT9D111_REG_FY_FOR_BLUE_COLOR_AT_THE_FIRST_PIXEL_OF_THE_ARRAY                   0x8D
+#define MT9D111_REG_DF_DX_FOR_RED_COLOR_AT_THE_FIRST_PIXEL_OF_THE_ARRAY                 0x8E
+#define MT9D111_REG_DF_DX_FOR_GREEN_COLOR_AT_THE_FIRST_PIXEL_OF_THE_ARRAY               0x8F
+#define MT9D111_REG_DF_DX_FOR_BLUE_COLOR_AT_THE_FIRST_PIXEL_OF_THE_ARRAY                0x90
+#define MT9D111_REG_DF_DY_FOR_RED_COLOR_AT_THE_FIRST_PIXEL_OF_THE_ARRAY                 0x91
+#define MT9D111_REG_DF_DY_FOR_GREEN_COLOR_AT_THE_FIRST_PIXEL_OF_THE_ARRAY               0x92
+#define MT9D111_REG_DF_DY_FOR_BLUE_COLOR_AT_THE_FIRST_PIXEL_OF_THE_ARRAY                0x93
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_0_RED_COLOR                              0x94
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_0_GREEN_COLOR                            0x95
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_0_BLUE_COLOR                             0x96
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_1_RED_COLOR                              0x97
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_1_GREEN_COLOR                            0x98
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_1_BLUE_COLOR                             0x99
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_2_RED_COLOR                              0x9A
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_2_GREEN_COLOR                            0x9B
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_2_BLUE_COLOR                             0x9C
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_3_RED_COLOR                              0x9D
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_3_GREEN_COLOR                            0x9E
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_3_BLUE_COLOR                             0x9F
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_4_RED_COLOR                              0xA0
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_4_GREEN_COLOR                            0xA1
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_4_BLUE_COLOR                             0xA2
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_5_RED_COLOR                              0xA3
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_5_GREEN_COLOR                            0xA4
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_5_BLUE_COLOR                             0xA5
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_6_RED_COLOR                              0xA6
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_6_GREEN_COLOR                            0xA7
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_6_BLUE_COLOR                             0xA8
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_7_RED_COLOR                              0xA9
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_7_GREEN_COLOR                            0xAA
+#define MT9D111_REG_SECOND_DERIVATIVE_FOR_ZONE_7_BLUE_COLOR                             0xAB
+#define MT9D111_REG_X2_FACTORS                                                          0xAC
+#define MT9D111_REG_GLOBAL_OFFSET_OF_FXY_FUNCTION                                       0xAD
+#define MT9D111_REG_K_FACTOR_IN_K_FX_FY                                                 0xAE
+#define MT9D111_REG_BOUNDARIES_OF_FIRST_AE_MEASUREMENT_WINDOW_TOP_LEFT                  0xC0
+#define MT9D111_REG_BOUNDARIES_OF_FIRST_AE_MEASUREMENT_WINDOW_HEIGHT_WIDTH              0xC1
+#define MT9D111_REG_AE_MEASUREMENT_WINDOW_SIZE_LSW                                      0xC2
+#define MT9D111_REG_AE_AF_MEASUREMENT_ENABLE                                            0xC3
+#define MT9D111_REG_AVERAGE_LUMINANCE_IN_AE_WINDOWS_W12_AND_W11                         0xC4
+#define MT9D111_REG_AVERAGE_LUMINANCE_IN_AE_WINDOWS_W14_AND_W13                         0xC5
+#define MT9D111_REG_AVERAGE_LUMINANCE_IN_AE_WINDOWS_W22_AND_W21                         0xC6
+#define MT9D111_REG_AVERAGE_LUMINANCE_IN_AE_WINDOWS_W24_AND_W23                         0xC7
+#define MT9D111_REG_AVERAGE_LUMINANCE_IN_AE_WINDOWS_W32_AND_W31                         0xC8
+#define MT9D111_REG_AVERAGE_LUMINANCE_IN_AE_WINDOWS_W34_AND_W33                         0xC9
+#define MT9D111_REG_AVERAGE_LUMINANCE_IN_AE_WINDOWS_W42_AND_W41                         0xCA
+#define MT9D111_REG_AVERAGE_LUMINANCE_IN_AE_WINDOWS_W44_AND_W43                         0xCB
+#define MT9D111_REG_SATURATION_AND_COLOR_KILL                                           0xD2
+#define MT9D111_REG_HISTOGRAM_WINDOW_LOWER_BOUNDARIES                                   0xD3
+#define MT9D111_REG_HISTOGRAM_WINDOW_UPPER_BOUNDARIES                                   0xD4
+#define MT9D111_REG_FIRST_SET_OF_BIN_DEFINITIONS                                        0xD5
+#define MT9D111_REG_SECONDS_SET_OF_BIN_DEFINITIONS                                      0xD6
+#define MT9D111_REG_HISTOGRAM_WINDOW_SIZE                                               0xD7
+#define MT9D111_REG_PIXEL_COUNTS_FOR_BIN0_AND_BIN1                                      0xD8
+#define MT9D111_REG_PIXEL_COUNTS_FOR_BIN2_AND_BIN3                                      0xD9
 //! \}
 
 #endif // MT9D111_REG_H_
