@@ -227,6 +227,16 @@ bool MT9D111::EnablePLL()
     return true;
 }
 
+bool MT9D111::SetRegisterPage(uint16_t page)
+{
+    return this->WriteReg(MT9D111_REG_PAGE_REGISTER, page);
+}
+
+bool MT9D111::GetRegisterPage(uint16_t *page)
+{
+    return this->ReadReg(MT9D111_REG_PAGE_REGISTER, page);
+}
+
 bool MT9D111::Reset(uint8_t type)
 {
     switch(type)
@@ -334,6 +344,39 @@ bool MT9D111::CheckDevice()
     else
     {
         return false;
+    }
+}
+
+bool MT9D111::SetMode(uint8_t mode)
+{
+    switch(mode)
+    {
+        case MT9D111_MODE_PREVIEW:
+            if (this->WriteReg(MT9D111_REG_CONTEXT_CONTROL, 0x0000) and
+                this->WriteReg(MT9D111_REG_HORIZONTAL_BLANKING_A, 0x00AE) and
+                this->WriteReg(MT9D111_REG_VERTICAL_BLANKING_A, 0x0010) and
+                this->WriteReg(MT9D111_REG_READ_MODE_A, 0x0490))
+            {
+                return true;
+            }
+            else
+            {
+                return true;
+            }
+        case MT9D111_MODE_CAPTURE:
+            if (this->WriteReg(MT9D111_REG_CONTEXT_CONTROL, 0x000B) and
+                this->WriteReg(MT9D111_REG_HORIZONTAL_BLANKING_B, 0x015C) and
+                this->WriteReg(MT9D111_REG_VERTICAL_BLANKING_B, 0x0020) and
+                this->WriteReg(MT9D111_REG_READ_MODE_B, 0x0000))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        default:
+            return false;
     }
 }
 

@@ -57,6 +57,10 @@
 #define MT9D111_STANDBY_HARD            0
 #define MT9D111_STANDBY_SOFT            1
 
+// Operation modes (or context)
+#define MT9D111_MODE_PREVIEW            0
+#define MT9D111_MODE_CAPTURE            1
+
 /**
  * \class MT9D111
  *
@@ -171,6 +175,34 @@ class MT9D111
          * \return TRUE/FALSE if successful or not.
          */
         bool EnablePLL();
+        /**
+         * \brief Sets the registers page to configure or read.
+         *
+         * Hardware registers are organized into several pages. Page 0 contains sensor controls.
+         * Page 1 contains color pipeline controls. Page 2 contains JPEG, output FIFO and more color
+         * pipeline controls. The desired page is selected by writing the desired value to R0xF0.
+         * After that all READs and WRITEs to registers 0..255 except R0xF0 and R0xF1, is directed to
+         * the selected page. R0xF0 and R0xF1 are special registers and are present on all pages.
+         *
+         * \param page is the registers page to set. It can be:
+         *            - MT9D111_REG_PAGE_0.
+         *            - MT9D111_REG_PAGE_1.
+         *            - MT9D111_REG_PAGE_2.
+         *            .
+         *
+         * \return TRUE/FALSE if successful or not.
+         */
+        bool SetRegisterPage(uint16_t page);
+        /**
+         * \brief Gets the current active registers page.
+         *
+         * Note: See "SetRegisterPage" for more details about registers pages.
+         *
+         * \param page is pointer to store the active page number.
+         *
+         * \return TRUE/FALSE if successful or not.
+         */
+        bool GetRegisterPage(uint16_t *page);
     public:
         /**
          * \brief Constructor without parameters.
@@ -337,6 +369,19 @@ class MT9D111
          * \return TRUE/FALSE if the device is connected/working or not. 
          */
         bool CheckDevice();
+        /**
+         * \brief Sets the operation mode (or context) of the sensor.
+         *
+         * \param mode is the operation mode.
+         *
+         * The operation mode can be:
+         *     - MT9D111_MODE_PREVIEW for preview mode (usually, lower resolution and faster acquisition).
+         *     - MT9D111_MODE_CAPTURE for capture mode (usually, higher resolution and slower acquisition).
+         *     .
+         *
+         * \return TRUE/FALSE if successful or not.
+         */
+        bool SetMode(uint8_t mode);
 };
 
 #endif // MT9D111_H_

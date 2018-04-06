@@ -52,6 +52,11 @@ struct Register
     uint16_t    value;      /**< Register value. */
 };
 
+// Registers pages
+#define MT9D111_REG_PAGE_0                          0   /**< Sensor core. */
+#define MT9D111_REG_PAGE_1                          1   /**< IFP page 1. */
+#define MT9D111_REG_PAGE_2                          2   /**< IFP page 2. */
+
 /**
  * \brief Sensor Core Registers Addresses.
  *
