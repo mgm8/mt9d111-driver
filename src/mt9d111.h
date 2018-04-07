@@ -61,6 +61,16 @@
 #define MT9D111_MODE_PREVIEW            0
 #define MT9D111_MODE_CAPTURE            1
 
+// Output formats
+#define MT9D111_OUTPUT_FORMAT_YCbCr     0
+#define MT9D111_OUTPUT_FORMAT_RGB565    1
+#define MT9D111_OUTPUT_FORMAT_RGB555    2
+#define MT9D111_OUTPUT_FORMAT_RGB444x   3
+#define MT9D111_OUTPUT_FORMAT_RGBx444   4
+#define MT9D111_OUTPUT_FORMAT_JPEG      5
+#define MT9D111_OUTPUT_FORMAT_RAW_8     6
+#define MT9D111_OUTPUT_FORMAT_RAW_10    7
+
 /**
  * \class MT9D111
  *
@@ -382,6 +392,23 @@ class MT9D111
          * \return TRUE/FALSE if successful or not.
          */
         bool SetMode(uint8_t mode);
+        /**
+         * \brief Sets the output format of the frames.
+         *
+         * \param format is the new output format. It can be:
+         *            - MT9D111_OUTPUT_FORMAT_YCbCr
+         *            - MT9D111_OUTPUT_FORMAT_RGB565
+         *            - MT9D111_OUTPUT_FORMAT_RGB555
+         *            - MT9D111_OUTPUT_FORMAT_RGB444x
+         *            - MT9D111_OUTPUT_FORMAT_RGBx444
+         *            - MT9D111_OUTPUT_FORMAT_JPEG
+         *            - MT9D111_OUTPUT_FORMAT_RAW_8
+         *            - MT9D111_OUTPUT_FORMAT_RAW_10
+         *            .
+         *
+         * \return TRUE/FALSE if successful or not.
+         */
+        bool SetOutputFormat(uint8_t format);
 };
 
 #endif // MT9D111_H_

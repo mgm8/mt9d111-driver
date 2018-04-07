@@ -380,4 +380,58 @@ bool MT9D111::SetMode(uint8_t mode)
     }
 }
 
+bool MT9D111::SetOutputFormat(uint8_t format)
+{
+    this->SetRegisterPage(MT9D111_REG_PAGE_1);
+
+    switch(format)
+    {
+        case MT9D111_OUTPUT_FORMAT_YCbCr:
+            this->WriteReg(MT9D111_REG_FACTORY_BYPASS, 0x01);
+            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_CONFIGURATION, 0x00);
+            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, 0x00);
+            break;
+        case MT9D111_OUTPUT_FORMAT_RGB565:
+            this->WriteReg(MT9D111_REG_FACTORY_BYPASS, 0x01);
+            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_CONFIGURATION, 0x20);
+            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, 0x00);
+            break;
+        case MT9D111_OUTPUT_FORMAT_RGB555:
+            this->WriteReg(MT9D111_REG_FACTORY_BYPASS, 0x01);
+            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_CONFIGURATION, 0x60);
+            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, 0x00);
+            break;
+        case MT9D111_OUTPUT_FORMAT_RGB444x:
+            this->WriteReg(MT9D111_REG_FACTORY_BYPASS, 0x01);
+            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_CONFIGURATION, 0xA0);
+            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, 0x00);
+            break;
+        case MT9D111_OUTPUT_FORMAT_RGBx444:
+            this->WriteReg(MT9D111_REG_FACTORY_BYPASS, 0x01);
+            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_CONFIGURATION, 0xE0);
+            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, 0x00);
+            break;
+        case MT9D111_OUTPUT_FORMAT_JPEG:
+            this->WriteReg(MT9D111_REG_FACTORY_BYPASS, 0x02);
+            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, 0x00);
+            break;
+        case MT9D111_OUTPUT_FORMAT_RAW_8:
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_BOOT_MODE, 0x01);
+            this->WriteReg(MT9D111_REG_FACTORY_BYPASS, 0x00);
+            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, 0x00);
+            break;
+        case MT9D111_OUTPUT_FORMAT_RAW_10:
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_BOOT_MODE, 0x01);
+            this->WriteReg(MT9D111_REG_FACTORY_BYPASS, 0x01);
+            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, 0x40);
+            break;
+        default:
+            return false;
+    }
+
+    this->SetRegisterPage(MT9D111_REG_PAGE_0);
+
+    return true;
+}
+
 //! \} End of mt9d111 group
