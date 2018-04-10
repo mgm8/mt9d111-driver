@@ -745,76 +745,483 @@ struct Register
  * Reference: Table 6: IFP Registers, Page 1; "MT9D111 - 1/3.2-Inch 2-Megapixel SOC Digital Image Sensor Registers".
  * \{
  */
+
+/**
+ * Bit 0 - Toggles the assumption about Bayer CFA (vertical shift).
+ *         0 - row containing Blue comes first.
+ *         1 - row with Red comes first.
+ *
+ * Bit 1 - Toggles the assumption about Bayer CFA (horizontal shift).
+ *         0 - Green comes first.
+ *         1 - Red or Blue comes first.
+ *
+ * Bit 2 - 1 = enable lens shading correction.
+ *
+ * Bit 3 - 1 = enable on-the-fly defect correction.
+ *
+ * Bit 4 - 1 = enable 2D aperture correction.
+ *
+ * Bit 5 - 1 = enable color correction.
+ *         0 = bypass color correction (unity color matrix).
+ *
+ * Bit 6 - 1 = invert output pixel clock (in all modes - JPEG, SOC, sensor).
+ *
+ * Bit 7 - 1 = enable gamma correction.
+ *
+ * Bit 8 - 1 = enable decimator.
+ *
+ * Bit 9 - 1 = enable minblank. Allows len generation 2 lines earlier. Also adds 4 pixels to the line size.
+ *
+ * Bit 10 - 1 = enable 1D aperture correction.
+ */
 #define MT9D111_REG_COLOR_PIPELINE_CONTROL                                                      0x08
+
+/**
+ * Bits 1:0 - Data output bypass. Selects data going to D OUT pads.
+ *            00 = 10-bit sensor.
+ *            01 = SOC.
+ *            10 = JPEG and output FIFO (no bypass). Reg16 and Reg17 (Page 2) have to be set to the correct output frame size.
+ *            11 = Reserved.
+ *
+ * Bit 2 - Reserved.
+ *
+ * Bits 4:3 - GPIO output bypass.
+ *            00 = GPIO.
+ *            01 = FLASH is output on GPIO11.
+ *            10 = Reserved.
+ *            11 = Reserved.
+ */
 #define MT9D111_REG_FACTORY_BYPASS                                                              0x09
+
+/**
+ * Bits 2:0 - In bypass mode (R9[1:0] = 2): slew rate for D OUT [7:0], PIXCLK, FRAME_VALID, and LINE_VALID.
+ *            During normal operation, the slew of listed pads is set by JPEG configuration registers. Actual
+ *            slew depends on load, temperature, and I/O voltage. Set this register based on customers' characterization
+ *            results.
+ *
+ * Bit 3 - Unused.
+ *
+ * Bits 6:4 - Slew rate for GPIO[11:0]. Actual slew depends on load, temperature, and I/O voltage. Set this
+ *            register based on customers’ characterization results.
+ *
+ * Bit 7 - 1 = enable I/O pad input clamp during standby.That prevents elevated standby current if pad input
+ *         floating. The pads are GPIO[11:0], D OUT [7:0], FRAME_VALID, LINE_VALID, PIXCLK.
+ *         0 = disable I/O pad input clamp. Set this bit to “1” before going to soft/hard standby to reduce the 
+ *         leakage current. When coming out of standby, set this bit back to “0.” If none of the GPIOs are used
+ *         as inputs, this bit can be left at “1.”
+ *
+ * Bits 10:8 - Slew rate for S DATA . 7 = fastest slew; 0 = slowest. Actual slew depends on load, temperature,
+ *             and I/O voltage. Actual slew depends on load, temperature, and I/O voltage. Set this register
+ *             based on customers’ characterization results.
+ */
 #define MT9D111_REG_PAD_SLEW                                                                    0x0A
+
+/**
+ * Bit 0 - Reserved.
+ *
+ * Bit 1 - Reserved.
+ *
+ * Bit 2 - Reserved.
+ *
+ * Bit 3 - 1 = enable output FIFO clock.
+ *
+ * Bit 4 - 1 = enable JPEG clock.
+ *
+ * Bit 5 - Reserved.
+ *
+ * Bit 6 - Reserved.
+ *
+ * Bit 7 - 1 = enable GPIO clock.
+ *
+ * Bit 8 - Reserved.
+ */
 #define MT9D111_REG_INTERNAL_CLOCK_CONTROL                                                      0x0B
+
+/**
+ * Bits 10:0 - Use the crop window for pan and zoom. Crop coordinates are updated synchronously with frame
+ *             enable, unless freeze is enabled. In preview mode crop coordinates are automatically divided by
+ *             X skip factor. Coordinates are specified as (X0, Y0) and (X1, Y1), where X0 < X1 and Y0 < Y1.
+ *             Value is overwritten by mode driver (ID = 7).
+ */
 #define MT9D111_REG_X0_COORDINATE_FOR_CROP_WINDOW                                               0x11
+
+/**
+ * Bits 10:0 - See R17:1. Value is overwritten by mode driver (ID = 7).
+ */
 #define MT9D111_REG_X1_COORDINATE_FOR_CROP_WINDOW_1                                             0x12
+
+/**
+ * Bits 10:0 - See R17:1. Value is overwritten by mode driver (ID = 7).
+ */
 #define MT9D111_REG_Y0_COORDINATE_FOR_CROP_WINDOW                                               0x13
+
+/**
+ * Bits 10:0 - See R17:1. Value is overwritten by mode driver (ID = 7).
+ */
 #define MT9D111_REG_Y1_COORDINATE_FOR_CROP_WINDOW_1                                             0x14
+
+/**
+ * \brief This register controls operation of the decimator. Value is overwritten by mode driver (ID=7).
+ *
+ * Bit 0 - Reserved.
+ *
+ * Bit 1 - Reserved.
+ *
+ * Bit 2 - High precision mode. Additional bits for result are stored. Can only be used for decimation > 2.
+ *
+ * Bit 3 - Reserved.
+ *
+ * Bit 4 - Enable 4:2:0 mode.
+ *
+ * Bits 5:6 - Reserved.
+ */
 #define MT9D111_REG_DECIMATOR_CONTROL                                                           0x15
+
+/**
+ * Bits 12:0 - X output = int (X input/2048*reg. value). Value is calculated and overwritten by mode driver
+ *             (ID = 7).
+ */
 #define MT9D111_REG_WEIGHT_FOR_HORIZONTAL_DECIMATION                                            0x16
+
+/**
+ * \brief InputSize is defined by Registers 17–20. Minimal output size supported by the decimator is 3 x 1 pixe.
+ *
+ * Bits 12:0 - Y output = int (Y input/2048*reg. value). Value is calculated and overwritten by mode driver
+ *             (ID = 7).
+ */
 #define MT9D111_REG_WEIGHT_FOR_VERTICAL_DECIMATION                                              0x17
+
+/**
+ * \brief In order to avoid skewing WB statistics by very dark or very bright values, this register allows
+ *        programming the luminance range of pixels to be used for WB computation.
+ *
+ * Bits 7:0 - Lower limit of luminance for WB statistics.
+ *
+ * Bits 15:8 - Upper limit of luminance for WB statistics.
+ */
 #define MT9D111_REG_LUMINANCE_RANGE_OF_PIX_CONSIDERED_IN_WB_STATS                               0x20
+
+/**
+ * \brief This register specifies the right/left coordinates of the window used by AWB measurement engine.
+ *        The values programmed in the registers are desired boundaries divided by 8.
+ *
+ * Bits 7:0 - Left window boundary.
+ *
+ * Bits 15:8 - Right window boundary.
+ */
 #define MT9D111_REG_RIGHT_LEFT_COORDINATES_OF_AWB_MEASUREMENT_WINDOW                            0x2D
+
+/**
+ * \brief This register specifies the bottom/top coordinates of the window used by AWB measurement engine.
+ *        The values programmed in the registers are desired boundaries divided by 8.
+ *
+ * Bits 7:0 - Top window boundary.
+ *
+ * Bits 15:8 - Bottom window boundary.
+ */
 #define MT9D111_REG_BOTTOM_TOP_COORDINATES_OF_AWB_MEASUREMENT_WINDOW                            0x2E
+
+/**
+ * This register contains a measure of red chrominance obtained using AWB measurement algorithm. The measure 
+ * is normalized to an arbitrary maximum value; the same for R48:1, R49:1, and R50:1. Because of this 
+ * normalization, only the ratios of values of registers R48:1 R49:1, and R50:1 should be used.
+ */
 #define MT9D111_REG_RED_CHROMIANCE_MEASURE_CALCULATED_BY_AWB                                    0x30
+
+/**
+ * This register contains a measure of image luminance obtained using AWB measurement algorithm. The measure
+ * is normalized to an arbitrary maximum value; the same for R48:1, R49:1, and R50:1. Because of this
+ * normalization, only the ratios of values of registers R48:1, R49:1, and R50:1 should be used.
+ */
 #define MT9D111_REG_LUMINANCE_MEASURE_CALCULATED_BY_AWB                                         0x31
+
+/**
+ * This register contains a measure of blue chrominance obtained using AWB measurement algorithm. The measure 
+ * is normalized to an arbitrary maximum value; the same for R48:1, R49:1, and R50:1. Because of this 
+ * normalization, only the ratios of values of registers R48:1, R49:1, and R50:1 should be used.
+ */
 #define MT9D111_REG_BLUE_CHROMIANCE_MEASURE_CALCULATED_BY_AWB                                   0x32
+
+/**
+ * Bits 7:0 - Ap_knee; threshold for aperture signal.
+ *
+ * Bits 10:8 - Ap_gain; gain for aperture signal.
+ *
+ * Bits 13:11 - Ap_exp; exponent for gain for aperture signal.
+ */
 #define MT9D111_REG_1D_APERTURE_CORRECTION_PARAMETERS                                           0x35
+
+/**
+ * \brief Defines 2D aperture gain and threshold.
+ *
+ * Bits 7:0 - Ap_knee; threshold for aperture signal.
+ *
+ * Bits 10:8 - Ap_gain; gain for aperture signal.
+ *
+ * Bits 13:11 - Ap_exp; exponent for gain for aperture signal.
+ *
+ * Bit 14 - Reserved.
+ */
 #define MT9D111_REG_2D_APERTURE_CORRECTION_PARAMETERS                                           0x36
+
+/**
+ *
+ */
 #define MT9D111_REG_FILTERS                                                                     0x37
+
+/**
+ *
+ */
 #define MT9D111_REG_SECOND_BLACK_LEVEL                                                          0x3B
+
+/**
+ *
+ */
 #define MT9D111_REG_FIRST_BLACK_LEVEL                                                           0x3C
+
+/**
+ *
+ */
 #define MT9D111_REG_ENABLE_SUPPORT_FOR_PREVIEW_MODES                                            0x43
+
+/**
+ *
+ */
 #define MT9D111_REG_MIRRORS_SENSOR_REGISTER_0x20                                                0x44
+
+/**
+ *
+ */
 #define MT9D111_REG_MIRRORS_SENSOR_REGISTER_0xF2                                                0x45
+
+/**
+ *
+ */
 #define MT9D111_REG_MIRRORS_SENSOR_REGISTER_0x21                                                0x46
+
+/**
+ *
+ */
 #define MT9D111_REG_EDGE_THRESHOLD_FOR_INTERPOLATION                                            0x47
+
+/**
+ *
+ */
 #define MT9D111_REG_TEST_PATTERN                                                                0x48
+
+/**
+ *
+ */
 #define MT9D111_REG_TEST_PATTERN_R_MONOCHROME_VALUE                                             0x49
+
+/**
+ *
+ */
 #define MT9D111_REG_TEST_PATTERN_G_MONOCHROME_VALUE                                             0x4A
+
+/**
+ *
+ */
 #define MT9D111_REG_TEST_PATTERN_B_VALUE                                                        0x4B
+
+/**
+ *
+ */
 #define MT9D111_REG_DIGITAL_GAIN_2                                                              0x4E
+
+/**
+ *
+ */
 #define MT9D111_REG_COLOR_CORRECTION_MATRIX_EXPONENTS_FOR_C11_C22                               0x60
+
+/**
+ *
+ */
 #define MT9D111_REG_COLOR_CORRECTION_MATRIX_EXPONENTS_FOR_C22_C33                               0x61
+
+/**
+ *
+ */
 #define MT9D111_REG_COLOR_CORRECTION_MATRIX_ELEMENTS_1_AND_2_MANTISSAS                          0x62
+
+/**
+ *
+ */
 #define MT9D111_REG_COLOR_CORRECTION_MATRIX_ELEMENTS_3_AND_4_MANTISSAS                          0x63
+
+/**
+ *
+ */
 #define MT9D111_REG_COLOR_CORRECTION_MATRIX_ELEMENTS_5_AND_6_MANTISSAS                          0x64
+
+/**
+ *
+ */
 #define MT9D111_REG_COLOR_CORRECTION_MATRIX_ELEMENTS_7_AND_8_MANTISSAS                          0x65
+
+/**
+ *
+ */
 #define MT9D111_REG_COLOR_CORRECTION_MATRIX_ELEMENT_9_MANTISSA_AND_SIGNS                        0x66
+
+/**
+ *
+ */
 #define MT9D111_REG_DIGITAL_GAIN_1_FOR_RED_PIXELS                                               0x6A
+
+/**
+ *
+ */
 #define MT9D111_REG_DIGITAL_GAIN_1_FOR_GREEN_1_PIXELS                                           0x6B
+
+/**
+ *
+ */
 #define MT9D111_REG_DIGITAL_GAIN_1_FOR_GREEN_2_PIXELS                                           0x6C
+
+/**
+ *
+ */
 #define MT9D111_REG_DIGITAL_GAIN_1_FOR_BLUE_PIXELS                                              0x6D
+
+/**
+ *
+ */
 #define MT9D111_REG_DIGITAL_GAIN_1_FOR_ALL_COLORS                                               0x6E
+
+/**
+ *
+ */
 #define MT9D111_REG_BOUNDARIES_OF_FLICKER_MEASUREMENT_WINDOW_LEFT_WIDTH                         0x7A
+
+/**
+ *
+ */
 #define MT9D111_REG_BOUNDARIES_OF_FLICKER_MEASUREMENT_WINDOW_TOP_HEIGHT                         0x7B
+
+/**
+ *
+ */
 #define MT9D111_REG_FLICKER_MEASUREMENT_WINDOW_SIZE                                             0x7C
+
+/**
+ *
+ */
 #define MT9D111_REG_MEASURE_OF_AVERAGE_LUMINANCE_IN_FLICKER_MEASUREMENT_WINDOW                  0x7D
+
+/**
+ *
+ */
 #define MT9D111_REG_BLANK_FRAMES                                                                0x96
+
+/**
+ *
+ */
 #define MT9D111_REG_OUTPUT_FORMAT_CONFIGURATION                                                 0x97
+
+/**
+ *
+ */
 #define MT9D111_REG_OUTPUT_FORMAT_TEST                                                          0x98
+
+/**
+ *
+ */
 #define MT9D111_REG_LINE_COUNT                                                                  0x99
+
+/**
+ *
+ */
 #define MT9D111_REG_FRAME_COUNT                                                                 0x9A
+
+/**
+ *
+ */
 #define MT9D111_REG_SPECIAL_EFFECTS                                                             0xA4
+
+/**
+ *
+ */
 #define MT9D111_REG_SEPIA_CONSTANTS                                                             0xA5
+
+/**
+ *
+ */
 #define MT9D111_REG_GAMMA_CURVE_KNEES_0_AND_1                                                   0xB2
+
+/**
+ *
+ */
 #define MT9D111_REG_GAMMA_CURVE_KNEES_2_AND_3                                                   0xB3
+
+/**
+ *
+ */
 #define MT9D111_REG_GAMMA_CURVE_KNEES_4_AND_5                                                   0xB4
+
+/**
+ *
+ */
 #define MT9D111_REG_GAMMA_CURVE_KNEES_6_AND_7                                                   0xB5
+
+/**
+ *
+ */
 #define MT9D111_REG_GAMMA_CURVE_KNEES_8_AND_9                                                   0xB6
+
+/**
+ *
+ */
 #define MT9D111_REG_GAMMA_CURVE_KNEES_10_AND_11                                                 0xB7
+
+/**
+ *
+ */
 #define MT9D111_REG_GAMMA_CURVE_KNEES_12_AND_13                                                 0xB8
+
+/**
+ *
+ */
 #define MT9D111_REG_GAMMA_CURVE_KNEES_14_AND_15                                                 0xB9
+
+/**
+ *
+ */
 #define MT9D111_REG_GAMMA_CURVE_KNEES_16_AND_17                                                 0xBA
+
+/**
+ *
+ */
 #define MT9D111_REG_GAMMA_CURVE_KNEE_18                                                         0xBB
+
+/**
+ *
+ */
 #define MT9D111_REG_YUV_YCbCr_CONTROL                                                           0xBE
+
+/**
+ *
+ */
 #define MT9D111_REG_Y_RGB_OFFSET                                                                0xBF
+
+/**
+ *
+ */
 #define MT9D111_REG_MICROCONTROLLER_BOOT_MODE                                                   0xC3
+
+/**
+ *
+ */
 #define MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS                                            0xC6
+
+/**
+ *
+ */
 #define MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA                                               0xC8
+
+/**
+ *
+ */
 #define MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA_USING_BURST_TWO_WIRE_SERIAL_INTERFACE_ACCESS  0xC9
 //! \}
 
