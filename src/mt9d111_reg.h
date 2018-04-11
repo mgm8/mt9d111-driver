@@ -965,262 +965,472 @@ struct Register
 #define MT9D111_REG_2D_APERTURE_CORRECTION_PARAMETERS                                           0x36
 
 /**
+ * Bits 2:0 - UV filter:
+ *            000 - no filter
+ *            001 - 11110 averaging filter
+ *            010 - 01100 averaging filter
+ *            011 - 01210 averaging filter
+ *            100 - 12221 averaging filter
+ *            101 - median 3
+ *            110 - median 5
+ *            111 - Reserved
  *
+ * Bits 4:3 - Y filter mode:
+ *            00 - no filter
+ *            01 - median 3
+ *            10 - median 5
+ *            11 - Reserved
+ *
+ * Bit 5 - Permanently enable Y filter.
  */
 #define MT9D111_REG_FILTERS                                                                     0x37
 
 /**
- *
+ * This register contains the value subtracted by IFP from pixel values prior to CCM. If the subtraction produces
+ * a negative result for a particular pixel, the value of this pixel is set to "0".
  */
 #define MT9D111_REG_SECOND_BLACK_LEVEL                                                          0x3B
 
 /**
- *
+ * This register contains the value subtracted by IFP from raw pixel values before applying lens shading correction
+ * and digital gains. If the subtraction produces a negative result for a particular pixel, the value of this pixel
+ * is set to "0". Typically, the subtracted value should be equal to the black level targeted by the sensor. This
+ * value is subtracted from all test patterns as well.
  */
 #define MT9D111_REG_FIRST_BLACK_LEVEL                                                           0x3C
 
 /**
- *
+ * 1 - enable. Enable automatic recalculation operation of coefficient lens correction dependent on sensor output
+ * resolution.
  */
 #define MT9D111_REG_ENABLE_SUPPORT_FOR_PREVIEW_MODES                                            0x43
 
 /**
- *
+ * Read only.
  */
 #define MT9D111_REG_MIRRORS_SENSOR_REGISTER_0x20                                                0x44
 
 /**
- *
+ * Read only.
  */
 #define MT9D111_REG_MIRRORS_SENSOR_REGISTER_0xF2                                                0x45
 
 /**
- *
+ * Read only.
  */
 #define MT9D111_REG_MIRRORS_SENSOR_REGISTER_0x21                                                0x46
 
 /**
- *
+ * Threshold for identifying pixel neighborhood as having an edge.
  */
 #define MT9D111_REG_EDGE_THRESHOLD_FOR_INTERPOLATION                                            0x47
 
 /**
+ * \brief Injects test pattern into beginning of color pipeline.
  *
+ * Bits 2:0 - Test mode:
+ *            001 - flat field; RGB values are specified in R73-75:1
+ *            010 - vertical monochrome ramp
+ *            011 - vertical color bars
+ *            100 - vertical monochrome bars; set bar intensity in R73:1 and R74:1
+ *            101 - pseudo-random test pattern
+ *            110 - horizontal monochrome bars; set bar intensity in R73:1 and R74:1
  */
 #define MT9D111_REG_TEST_PATTERN                                                                0x48
 
 /**
- *
+ * Bits 9:0
  */
 #define MT9D111_REG_TEST_PATTERN_R_MONOCHROME_VALUE                                             0x49
 
 /**
- *
+ * Bits 9:0
  */
 #define MT9D111_REG_TEST_PATTERN_G_MONOCHROME_VALUE                                             0x4A
 
 /**
- *
+ * Bits 9:0
  */
 #define MT9D111_REG_TEST_PATTERN_B_VALUE                                                        0x4B
 
 /**
- *
+ * Default setting 32 corresponds to gain value of 1. Gain scales linearly with value.
  */
 #define MT9D111_REG_DIGITAL_GAIN_2                                                              0x4E
 
 /**
+ * Bits 2:0 - matrix element 1 (C11) exponent
  *
+ * Bits 5:3 - matrix element 2 (C12) exponent
+ *
+ * Bits 8:6 - matrix element 3 (C13) exponent
+ *
+ * Bits 11:9 - matrix element 4 (C21) exponent
+ *
+ * Bits 14:12 - matrix element 5 (C22) exponent
  */
 #define MT9D111_REG_COLOR_CORRECTION_MATRIX_EXPONENTS_FOR_C11_C22                               0x60
 
 /**
+ * Bits 2:0 - matrix element 6 (C23) exponent
  *
+ * Bits 5:3 - matrix element 7(C31) exponent
+ *
+ * Bits 8:6 - matrix element 8(C32) exponent
+ *
+ * Bits 11:9 - matrix element 9(C33) exponent
+ *
+ * The value of a matrix coefficient is calculated Cij=(1 - 2*Sij)*Mij*2^-(Eij + 4), 0 <= Eij <= 4
+ * Here Sij is coefficient’s sign, Mij is the mantissa and Eij is the exponent.
  */
 #define MT9D111_REG_COLOR_CORRECTION_MATRIX_EXPONENTS_FOR_C22_C33                               0x61
 
 /**
+ * Bits 7:0 - Color correction matrix element 1 (C11).
  *
+ * Bits 15:8 - Color correction matrix element 2 (C12).
  */
 #define MT9D111_REG_COLOR_CORRECTION_MATRIX_ELEMENTS_1_AND_2_MANTISSAS                          0x62
 
 /**
+ * Bits 7:0 - Color correction matrix element 3 (C13).
  *
+ * Bits 15:8 - Color correction matrix element 4 (C21).
  */
 #define MT9D111_REG_COLOR_CORRECTION_MATRIX_ELEMENTS_3_AND_4_MANTISSAS                          0x63
 
 /**
+ * Bits 7:0 - Color correction matrix element 5 (C22).
  *
+ * Bits 15:8 - Color correction matrix element 6 (C23).
  */
 #define MT9D111_REG_COLOR_CORRECTION_MATRIX_ELEMENTS_5_AND_6_MANTISSAS                          0x64
 
 /**
+ * Bits 7:0 - Color correction matrix element 7 (C31).
  *
+ * Bits 15:8 - Color correction matrix element 8 (C32).
  */
 #define MT9D111_REG_COLOR_CORRECTION_MATRIX_ELEMENTS_7_AND_8_MANTISSAS                          0x65
 
 /**
+ * Bits 7:0 - Color correction matrix element 9 (C33).
  *
+ * Bits 13:8 - Signs for off-diagonal CCM elements.
+ *             Bit 8 - sign for C12
+ *             Bit 9 - sign for C13
+ *             Bit 10 - sign for C21
+ *             Bit 11 - sign for C23
+ *             Bit 12 - sign for C31
+ *             Bit 13 - sign for C32
+ *             1 - indicates negative
+ *             0 - indicates positive
+ *             Signs for C11, C22, and C33 are assumed always positive.
  */
 #define MT9D111_REG_COLOR_CORRECTION_MATRIX_ELEMENT_9_MANTISSA_AND_SIGNS                        0x66
 
 /**
- *
+ * Default setting 128 corresponds to gain value of 1. Gain scales linearly with value.
  */
 #define MT9D111_REG_DIGITAL_GAIN_1_FOR_RED_PIXELS                                               0x6A
 
 /**
- *
+ * Default setting 128 corresponds to gain value of 1. Gain scales linearly with value.
  */
 #define MT9D111_REG_DIGITAL_GAIN_1_FOR_GREEN_1_PIXELS                                           0x6B
 
 /**
- *
+ * Default setting 128 corresponds to gain value of 1. Gain scales linearly with value.
  */
 #define MT9D111_REG_DIGITAL_GAIN_1_FOR_GREEN_2_PIXELS                                           0x6C
 
 /**
- *
+ * Default setting 128 corresponds to gain value of 1. Gain scales linearly with value.
  */
 #define MT9D111_REG_DIGITAL_GAIN_1_FOR_BLUE_PIXELS                                              0x6D
 
 /**
- *
+ * Write 128 to set all gains (R106-R109) to 1. When read, this register returns the value of R107.
  */
 #define MT9D111_REG_DIGITAL_GAIN_1_FOR_ALL_COLORS                                               0x6E
 
 /**
+ * \brief This register specifies the boundaries of the window used by the flicker measurement engine. The values
+ * programmed in the registers are the desired boundaries divided by 8.
  *
+ * Bits 7:0 - Window width.
+ *
+ * Bits 15:8 - Left window boundary.
  */
 #define MT9D111_REG_BOUNDARIES_OF_FLICKER_MEASUREMENT_WINDOW_LEFT_WIDTH                         0x7A
 
 /**
+ * \brief This register specifies the boundaries of the window used by the flicker measurement engine.
  *
+ * Bits 5:0 - Window height.
+ *
+ * Bits 15:6 - Top window boundary.
  */
 #define MT9D111_REG_BOUNDARIES_OF_FLICKER_MEASUREMENT_WINDOW_TOP_HEIGHT                         0x7B
 
 /**
- *
+ * This register specifies the number of pixels in the window used by the flicker measurement engine.
  */
 #define MT9D111_REG_FLICKER_MEASUREMENT_WINDOW_SIZE                                             0x7C
 
 /**
- *
+ * Bits 15:0
  */
 #define MT9D111_REG_MEASURE_OF_AVERAGE_LUMINANCE_IN_FLICKER_MEASUREMENT_WINDOW                  0x7D
 
 /**
- *
+ * 1 = blank outgoing frames. When set, current frame completes and following frames are not output, FEN = LEN = 0.
+ * When unset, output resumes with the next frame. The bit is synchronized with frame enable. See freeze bit (R152[7]).
  */
 #define MT9D111_REG_BLANK_FRAMES                                                                0x96
 
 /**
+ * Bit 0 - In YUV output mode, swaps Cb and Cr channels. In RGB mode, swaps R and B. This bit is subject to
+ *         synchronous update.
  *
+ * Bit 1 - Swaps chrominance byte with luminance byte in YUV output. In RGB mode, swaps odd and even bytes. This bit
+ *         is subject to synchronous update.
+ *
+ * Bit 2 - Reserved
+ *
+ * Bit 3 - Monochrome output.
+ *
+ * Bit 4 - 1 = use ITU-R BT.601 codes when bypassing FIFO. (0xAB = frame start; 0x80 = line start; 0x9D = line end;
+ *         0xB6 = frame end.)
+ *
+ * Bit 5 - 1 = output RGB (see R151[7:6])
+ *         0 = output YUV
+ *
+ * Bits 7:6 - RGB output format:
+ *            00 = 16-bit RGB565
+ *            01 = 15-bit RGB555
+ *            10 = 12-bit RGB444x
+ *            11 = 12-bit RGBx444
  */
 #define MT9D111_REG_OUTPUT_FORMAT_CONFIGURATION                                                 0x97
 
 /**
+ * Bit 0 - 1 = disable Cr channel (R in RGB mode).
  *
+ * Bit 1 - 1 = disable Y channel (G in RGB mode).
+ *
+ * Bit 2 - 1 = disable Cb channel (B in RGB mode).
+ *
+ * Bits 5:3 - Test ramp output:
+ *            00 - off
+ *            01 - by column
+ *            10 - by row
+ *            11 - by frame
+ *
+ * Bit 6 - 1 = enable 8+2 bypass.
+ *
+ * Bit 7 - 1 = freeze update SOC registers affecting output size and format. These include R151:1, R17-23:1.
  */
 #define MT9D111_REG_OUTPUT_FORMAT_TEST                                                          0x98
 
 /**
- *
+ * Bits 11:0
  */
 #define MT9D111_REG_LINE_COUNT                                                                  0x99
 
 /**
- *
+ * Bits 15:0
  */
 #define MT9D111_REG_FRAME_COUNT                                                                 0x9A
 
 /**
+ * Bits 2:0 - Special effect selection bits:
+ *            0 - disabled
+ *            1 - monochrome
+ *            2 - sepia
+ *            3 - negative
+ *            4 - solarization with unmodified UV
+ *            5 - solarization with -UV
  *
+ * Bits 5:3 - Dither enable and amplitude. Valid values are 1..4, others disable.
+ *
+ * Bit 6 - 1 = dither only in luma channel, 0 = dither in all color channels.
+ *
+ * Bits 15:8 - Solarization threshold for luma, divided by 2; 64..127.
  */
 #define MT9D111_REG_SPECIAL_EFFECTS                                                             0xA4
 
 /**
+ * Bits 7:0 - Sepia constant for Cr.
  *
+ * Bits 15:8 - Sepia constant for Cb.
  */
 #define MT9D111_REG_SEPIA_CONSTANTS                                                             0xA5
 
 /**
+ * Bits 7:0 - Ordinate of gamma curve knee point 0 (its abscissa is 0).
  *
+ * Bits 15:8 - Gamma curve knee point 1.
+ *
+ * Gamma correction curve is implemented in the MT9D111 as a piecewise linear function mapping 12-bit arguments
+ * to 8-bit output. Seventeen line fragments forming the curve connect 19 knee points, whose abscissas are fixed
+ * and ordinates are programmable through registers R[178:187]:1. The abscissas of the knee points are 0, 64, 128,
+ * 256, 512, 768, 1024, 1280, 1536, 1792, 2048, 2304, 2560, 2816, 3072, 3328, 3584, 3840, and 4095. Ordinates of
+ * knee points written directly to the registers R[178:187]:1 may be overwritten by mode driver (ID=7). The recommended
+ * way to program a gamma curve into the MT9D111 is to write desired knee ordinates to one of the two
+ * mode.gamma_table[A/B][] arrays that hold gamma curves used in contexts A and B. Once the desired ordinates are in
+ * one of those arrays, all that is needed to put them into effect (i.e. into the registers) is a short command
+ * telling the sequencer to go to proper context or through REFRESH loop.
  */
 #define MT9D111_REG_GAMMA_CURVE_KNEES_0_AND_1                                                   0xB2
 
 /**
+ * Bits 7:0 - Gamma curve knee point 2.
  *
+ * Bits 15:8 - Gamma curve knee point 3.
  */
 #define MT9D111_REG_GAMMA_CURVE_KNEES_2_AND_3                                                   0xB3
 
 /**
+ * Bits 7:0 - Gamma curve knee point 4.
  *
+ * Bits 15:8 - Gamma curve knee point 5.
  */
 #define MT9D111_REG_GAMMA_CURVE_KNEES_4_AND_5                                                   0xB4
 
 /**
+ * Bits 7:0 - Gamma curve knee point 6.
  *
+ * Bits 15:8 - Gamma curve knee point 7.
  */
 #define MT9D111_REG_GAMMA_CURVE_KNEES_6_AND_7                                                   0xB5
 
 /**
+ * Bits 7:0 - Gamma curve knee point 8.
  *
+ * Bits 15:8 - Gamma curve knee point 9.
  */
 #define MT9D111_REG_GAMMA_CURVE_KNEES_8_AND_9                                                   0xB6
 
 /**
+ * Bits 7:0 - Gamma curve knee point 10.
  *
+ * Bits 15:8 - Gamma curve knee point 11.
  */
 #define MT9D111_REG_GAMMA_CURVE_KNEES_10_AND_11                                                 0xB7
 
 /**
+ * Bits 7:0 - Gamma curve knee point 12.
  *
+ * Bits 15:8 - Gamma curve knee point 13.
  */
 #define MT9D111_REG_GAMMA_CURVE_KNEES_12_AND_13                                                 0xB8
 
 /**
+ * Bits 7:0 - Gamma curve knee point 14.
  *
+ * Bits 15:8 - Gamma curve knee point 15.
  */
 #define MT9D111_REG_GAMMA_CURVE_KNEES_14_AND_15                                                 0xB9
 
 /**
+ * Bits 7:0 - Gamma curve knee point 16.
  *
+ * Bits 15:8 - Gamma curve knee point 17.
  */
 #define MT9D111_REG_GAMMA_CURVE_KNEES_16_AND_17                                                 0xBA
 
 /**
- *
+ * Bits 7:0
  */
 #define MT9D111_REG_GAMMA_CURVE_KNEE_18                                                         0xBB
 
 /**
+ * Bit 3 - Clips Y values to 16–235; clips UV values to 16–240.
  *
+ * Bit 2 - Adds 128 to U and V values.
+ *
+ * Bit 1 - 1 = ITU-R BT.601 coefficients
+ *         0 = use sRGB coefficients.
+ *
+ * Bit 0 - 0 = no scaling
+ *         1 = scales Y data by 219/256 and UV data by 224/256.
  */
 #define MT9D111_REG_YUV_YCbCr_CONTROL                                                           0xBE
 
 /**
+ * Bit 15:8 - Y offset.
  *
+ * Bit 7:0 - RGB offset.
  */
 #define MT9D111_REG_Y_RGB_OFFSET                                                                0xBF
 
 /**
+ * Bit 0 - 1 = reset microcontroller.
  *
+ * Bit 1 - Reserved
+ *
+ * Bit 2 - Reserved
+ *
+ * Bit 3 - Reserved
+ *
+ * Bits 6:4 - Reserved
+ *
+ * Bits 6:5 - Reserved
+ *
+ * Bits 7:5 - Reserved
+ *
+ * Bit 7 - Microcontroller debug indicator.
+ *
+ * Bits 11:8 - Reserved
+ *
+ * Bit 12 - Reserved
+ *
+ * Bit 13 - Reserved
+ *
+ * Bit 14 - Reserved
+ *
+ * Bit 15 - Reserved
  */
 #define MT9D111_REG_MICROCONTROLLER_BOOT_MODE                                                   0xC3
 
 /**
+ * Bits 7:0 - Bits 7:0 of address for physical access; driver variable offset for logical access.
  *
+ * Bits 12:8 - Bits 12:8 of address for physical access; driver ID for logical access.
+ *
+ * Bits 14:13 - Bits 14:13 of address for physical access; R198:1[14:13] = 01 select logical access.
+ *
+ * Bit 15 - 1 = 8-bit access;
+ *          0 = 16-bit.
+ *
+ * Microcontroller variables are similar to two-wire serial interface registers, except that they are located in the
+ * microcontroller’s memory and have different bit widths. Registers 198:1 and R200:1 provide easy access to variables
+ * that can be represented as 8- or 16-bit unsigned integers (bytes or words). To access such a variable, one must
+ * write its address to R198:1 and then read its value from R200:1 or write a new value to the same register.
+ * Variables having more than 16 bits (e.g. 32-bit unsigned long integers) must be accessed as arrays of bytes or words -
+ * there is no way to read or write their values without parsing. Variable address written to R198:1 can be physical
+ * or logical. Physical address is the actual address of a byte or word in the microcontroller's address space.
+ * Physical addresses can be used in many manipulations of memory content, for example, to upload custom binary code
+ * to a specific RAM segment. The logical addressing option is provided only to facilitate access to public variables
+ * of various firmware drivers. Logical address of a public variable consists of a 5-bit driver ID (0 = monitor,
+ * 1 = sequencer, etc.) and 8-bit offset of the variable in the driver’s data structure (which cannot be larger than
+ * 256 bytes).
  */
 #define MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS                                            0xC6
 
 /**
- *
+ * To read current value of an 8- or 16-bit variable from microcontroller memory, write its address to R198:1 and read
+ * R200:1. To change value of a variable, write its address to R198:1 and its new value to R200:1. When bit width of
+ * a variable is specified as 8 bits (R198:1[15]=1), the upper byte of R200:1 is irrelevant. It is set to “0” when the
+ * register is read and ignored when it is written to. See R198:1 above for explanation how to read and set variables
+ * having more than 16 bits.
  */
 #define MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA                                               0xC8
 
 /**
- *
+ * Use these registers to read or write up to 16 bytes of variable data using the burst two-wire serial interface
+ * access mode. The variables must have consecutive addresses.
  */
 #define MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA_USING_BURST_TWO_WIRE_SERIAL_INTERFACE_ACCESS  0xC9
 //! \}
