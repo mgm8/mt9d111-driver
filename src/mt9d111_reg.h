@@ -1441,18 +1441,208 @@ struct Register
  * Reference: Table 7: IFP Registers, Page 2; "MT9D111 - 1/3.2-Inch 2-Megapixel SOC Digital Image Sensor Registers".
  * \{
  */
+
+/**
+ * Bit 0 - Start/Enable Encoder: Enable JPEG encoding at the start of next frame.
+ *
+ * Bit 1 - Test SRAM: When set, allows host or microcontroller to take control of the output FIFO buffer and the
+ * sixteen 800 x 16 RAMs in the re-order buffer for testing. Used in conjunction with JPEG RAM test controls register
+ * to simultaneously write all 17 RAMs and individually read each RAM.
+ *
+ * Bits 14:2 - Return zero when read.
+ *
+ * Bit 15 - Soft reset.
+ */
 #define MT9D111_REG_JPEG_CONTROL                                                        0x00
+
+/**
+ * Bit 0 - Transfer done status flag. When asserted, it indicates that the completion of transfer of the JPEG-compressed
+ * image. This status flag remains set until cleared by the host or microcontroller by writing “1” to bit [0].
+ * Subsequently, the output FIFO overflow, the spoof oversize error and the re-order buffer error status bits are reset.
+ * The output buffer clock must be present to clear this bit.
+ *
+ * Bit 1 - Output FIFO overflow status flag. When asserted, it indicates that an overflow condition was detected in
+ * the output FIFO during the frame transfer and that transfer was terminated prematurely. This status flag remains set
+ * until cleared by the host or microcontroller as it clears transfer done flag. Valid for JPEG compressed images only.
+ *
+ * Bit 2 - Spoof oversize error status flag. When asserted, it indicates that the spoof frame size is too small for
+ * JPEG data stream. This status flag remains set until cleared by the host or microcontroller as it clears transfer
+ * done flag. Valid for JPEG compressed images only.
+ *
+ * Bit 3 - Re-order buffer error status flag: When the re-order buffer detects an overflow or underflow condition, this
+ * bit is set to “1.” This bit is cleared by writing a “1” to bit[0] of this register.
+ *
+ * Bits 5:4 - Watermark of the output FIFO.
+ *            00 - less than 25 % full
+ *            01 - 25 % to less than 50 % full
+ *            10 - 50 % to less than 75 % full
+ *            11 - 75 % full or more
+ *            Watermark is cleared when the host or microcontroller writes “1” to bit 4 of this register (R258).
+ *
+ * Bits 7:6 - QTable_ID.
+ *            00 - Quantization table set 0
+ *            01 - Quantization table set 1
+ *            10 - Quantization table set 2
+ *            11 - Reserved
+ *
+ * Bits 15:8 - JPEG data length bits 23:16. Highest byte of 24-bit JPEG data length.
+ */
 #define MT9D111_REG_JPEG_STATUS_0                                                       0x02
+
+/**
+ * This register combined with R2:2[15:8] gives the total number of data bytes successfully encoded — a 24-bit JPEG
+ * data length. If an output FIFO overflow occurs, this register holds the total number of data bytes already sent out
+ * by the JPEG encoder (up to the point where the overflow occurs).
+ */
 #define MT9D111_REG_JPEG_STATUS_1                                                       0x03
+
+/**
+ * Instantaneous FIFO fullness status code:
+ * 000 - FIFO is empty
+ * 001 - 0 % < fullness < 25 %
+ * 011 - 25 % <= fullness < 50 %
+ * 010 - 50 % <= fullness < 75 %
+ * 110 - 75 % <= fullness <= 100 %
+ */
 #define MT9D111_REG_JPEG_STATUS_2                                                       0x04
+
+/**
+ * Bit 0 - Color component composition:
+ *         0 - 4:2:2 format
+ *         1 - 4:2:0 format
+ *
+ * Bit 1 - JPEG monochrome mode. When this bit is set, the re-order buffer control sends only luma data to the JPEG
+ *         encoder.
+ */
 #define MT9D111_REG_JPEG_FRONT_END_CONFIG                                               0x05
+
+/**
+ * Presently, the JPEG encoder core supports two sets of quantization tables. (Each set contains a pair of quantization
+ * tables - one for luma, one for chroma.) The quantization memory available allows an additional set of quantization
+ * tables to be stored. By setting this bit, the encoder uses the third table pair. If reset, then whichever set of
+ * tables 1 and 2 was programmed.
+ */
 #define MT9D111_REG_JPEG_CORE_CONFIG                                                    0x06
+
+/**
+ * Set bit 0 of this register to have uncompressed frames from the SOC captured in the output FIFO and transferred
+ * out as spoof frames (JPEG encoder is bypassed). Register 13, bit 0, should be set to “1” for spoof-mode output.
+ * When the bit is cleared, JPEG-encoded frames are transferred out through the FIFO.
+ */
 #define MT9D111_REG_JPEG_ENCODER_BYPASS                                                 0x0A
+
+/**
+ * Bit 0 - Enable spoof frame: When this bit is set, the data captured in the output FIFO is sent out as a spoofed frame,
+ * formatted according to information stored in the various spoof registers. This output mode can be used to output
+ * both JPEG-compressed and uncompressed image data. JPEG data may be padded if dummy data is needed. During LINE_VALID
+ * assertion period, the output clock is only clocked when there is valid JPEG data or padded dummy data to be transmitted.
+ * This may result in a non-uniform clock period. When LINE_VALID is de-asserted, the output clock is enabled according
+ * to SPOOF_LV_LEAD and SPOOF_LV_TRAIL setting. JPEG SOI/EOI markers cannot be inserted into spoof frames.
+ *
+ * Bit 1 - Enable output pixel clock between frames: When set, this bit enables the pixel clock to run whether FRAME_VALID
+ * is LOW or HIGH. Clearing the bit disables the clock during the periods when FRAME_VALID is de-asserted except for
+ * SOI/EOI markers transmission if they are outside the FV assertion period. The gating off of this output pixel clock
+ * saves power.
+ *
+ * Bit 2 - Enable pixel clock during invalid data: When this bit is set, the pixel clock runs continuously while FRAME_VALID
+ * is asserted but LINE_VALID is de-asserted. When cleared, it causes the pixel clock to be active only when valid JPEG
+ * data are output. Disabling pixel clock during LINE_VALID de-assertion is not support in spoof frame.
+ *
+ * Bit 3 - Enable SOI/EOI insertion: When set, this bit causes SOI and EOI markers to be output at the beginning and end
+ * of every JPEG-encoded frame. When the bit is cleared, only JPEG data bytes are output.
+ *
+ * Bit 4 - Insert SOI and EOI when FRAME_VALID is HIGH: When it is “1,” SOI and EOI are inside FV assertion period.
+ * When it is”0,” SOI, and EOI are outside FRAME_VALID assertion period. This bit is relevant only when SOI/EOI insertion
+ * is enabled.
+ *
+ * Bit 5 - Ignore spoof frame height: This bit is used in conjunction with bit 0 that enables spoof framing. When this
+ * bit is set, the JPEG unit output section ignores the spoof frame height register. The spoof frame ends when either
+ * JPEG bytes or uncompressed image data are exhausted. Both kinds of data are always padded with dummy data to the
+ * programmed spoof frame width.
+ *
+ * Bit 6 - Enable variable pixel clock rate: Setting this bit enables the adaptive pixel clock frequency feature. The
+ * pixel clock is switched from PCLK1 to PCLK2 to PCLK3, depending on the output FIFO fullness. When fullness reaches
+ * 50%, the pixel clock is switched from PCLK1 to PCLK2. When the fullness reaches 75%, the clock is switched to PCLK3.
+ * As the FIFO fullness drops below 50%, PIXCLK switches from PCLK3 to PCLK2; as it drops below 25%, it switches
+ * back to PCLK1. At the start of a frame, it always starts with PCLK1.
+ *
+ * Bit 7 - Enable byte swap: Toggling this bit swaps the even and odd bytes in JPEG data stream. Byte swapping supported
+ * only when enable spoof frame is set.
+ *
+ * Bit 8 - Duplicate FRAME_VALID on LINE_VALID: When this bit is set, the FRAME_VALID waveform is output on LINE_VALID
+ * output also; therefore, the two are identical.
+ *
+ * Bit 9 - Enable status insertion: When this bit is set, the JPEG module appends the status byte to the end of the JPEG
+ * byte stream. This register should only be set when transferring in continuous mode. The status byte inserted at the
+ * end of the JPEG byte stream is Reg2 bit [7:0].
+ *
+ * Bit 10 - Enable spoof ITU-R BT.601 codes: This bit is relevant matters when uncompressed frames are output in the
+ * spoof mode. When set, the bit causes the ITU-R BT.601 markers SOF, EOF, SOL, EOL to be inserted into every frame.
+ * Codes are:
+ * Start of Frame:  FF0000AB
+ * End of Frame:    FF0000B6
+ * Start of Line:   FF000080
+ * End of Line:     FF00009D
+ *
+ * Bit 11 - Freeze_update; Default = 0. When set, it disables the transfer of values from registers 0x0A, 0x0D (except
+ * freeze_update), 0x0E, 0x0F, 0x10, 0x11, 0x12 into their corresponding shadow registers. When cleared, the shadow
+ * registers are updated with values from their corresponding configuration registers at the end of vertical blanking
+ * of the input image. The shadow registers allow the microcontroller to change configuration registers values during
+ * the active frame time without corrupting the current frame transfer.
+ */
 #define MT9D111_REG_OUTPUT_CONFIG                                                       0x0D
+
+/**
+ * Bits 3:0 - Output clock frequency divisor N1: This 4-bit register contains an integer divisor used to divide master
+ * clock frequency to obtain the frequency of output clock source PCLK1. A value of "0" in this register has the same
+ * effect as "1".
+ *
+ * Bits 7:5 - PCLK1 slew rate: The value contained in this 3-bit register determines the slew rate of the output clock
+ * when PCLK1 is selected as its source.
+ *
+ * Bits 11:8 - Output Clock Frequency Divisor N2: This 4-bit register contains an integer divisor used to divide master
+ * clock frequency to obtain the frequency of output clock source PCLK2. The output clock switches from PCLK1 to PCLK2
+ * when the output buffer fullness reaches 50 %. A value of "0" in this register has the same effect as "1".
+ *
+ * Bit 12 - Not used.
+ *
+ * Bits 15:13 - PCLK2 slew rate: The value contained in this 3-bit register determines the slew rate of the output clock
+ * when PCLK2 is selected as its source.
+ */
 #define MT9D111_REG_OUTPUT_PCLK1_AND_PCLK2_CONFIG                                       0x0E
+
+/**
+ * Bits 3:0 - Output clock frequency divisor N3: This 4-bit register contains an integer divisor used to divide master
+ * clock frequency to obtain the frequency of output clock source PCLK3. The output clock switches from PCLK2 to PCLK3
+ * when the output buffer fullness reaches 75 %. A value of “0” in this register has the same effect as 1.
+ *
+ * Bit 4 - Not used.
+ *
+ * Bits 7:5 - PCLK3 slew rate: The value contained in this 3-bit register determines the slew rate of the output clock
+ * when PCLK3 is selected as its source.
+ */
 #define MT9D111_REG_OUTPUT_PCLK3_CONFIG                                                 0x0F
+
+/**
+ * This register defines the width of the spoof frame used to output data captured in the output FIFO. It corresponds
+ * to the number of valid data bytes output at each assertion of LINE_VALID. It must be an even number.
+ */
 #define MT9D111_REG_SPOOF_FRAME_WIDTH                                                   0x10
+
+/**
+ * This register defines the height of the spoof frame used to output data captured in the output FIFO. The height is
+ * equal to the number of assertions of LINE_VALID within one assertion of FRAME_VALID. The value stored in this register
+ * is ignored if bit R13:2[5] is set.
+ */
 #define MT9D111_REG_SPOOF_FRAME_HEIGHT                                                  0x11
+
+/**
+ * Bits 7:0 - Spoof LINE_VALID lead. The number of clocks before LINE_VALID is asserted in a spoof frame. This must
+ * be a minimum value of "5".
+ *
+ * Bits 15:8 - Spoof LINE_VALID trail. The number of clocks after LINE_VALID is de-asserted in a spoof frame. This must
+ * be a minimum value of "5".
+ */
 #define MT9D111_REG_SPOOF_FRAME_LINE_TIMING                                             0x12
 #define MT9D111_REG_JPEG_RAM_TEST_CONTROL_REGISTER                                      0x1D
 #define MT9D111_REG_JPEG_INDIRECT_ACCESS_CONTROL                                        0x1E
