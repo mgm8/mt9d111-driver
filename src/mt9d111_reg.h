@@ -1644,46 +1644,385 @@ struct Register
  * be a minimum value of "5".
  */
 #define MT9D111_REG_SPOOF_FRAME_LINE_TIMING                                             0x12
+
+/**
+ * Bits 9:0 - Tested SRAM address: This register defines the location in the seventeen 800 x 16 RAMs that is being
+ * accessed by the host or microcontroller while testing the group of SRAMs. A specified 16-bit location can be selected
+ * from 0 through 799. The address is automatically incremented when R31:2 is written during SRAM test data Write or
+ * read during SRAM test data read.
+ *
+ * Bits 12:10 - Test Y/C SRAM Register: Address the same set of 8 SRAMs (either for Y or for C), this register setting
+ * identifies which of the 8 SRAMs is selected. 000 for SRAM1, 001 for SRAM2,..., 111 for SRAM8.
+ *
+ * Bit 13 - Test Y/C SRAM Select Register: Select a bank of 8 SRAMs from luminance or from chrominance. Y = 1, C = 0.
+ *
+ * Bit 14 - Test output buffer SRAM: Select to read output buffer SRAM and supersedes Y/C SRAMs. If set, data from the
+ * output buffer RAM is selected to be read. During data WRITE, this has no effect.
+ *
+ * Bit 15 - SRAM write enable. This bit is used in conjunction with the RAM selection register. When this bit is set,
+ * the RAM specified in the selection register undergoes a test write cycle. Data residing in the indirect data register
+ * R31:2 is loaded into all seventeen 800 x 16 SRAMS simultaneously. Resetting the bit thereafter causes a test read
+ * cycle to be performed and the data is read from the SRAMs and loaded back into R31:2. This bit is write_enable when
+ * 1; read_enable when 0. The READ and WRITE cycles occur when R31:2 is accessed.
+ */
 #define MT9D111_REG_JPEG_RAM_TEST_CONTROL_REGISTER                                      0x1D
+
+/**
+ * Bits 10:0 - Indirect access address register: This 11-bit register contains the address of the register or memory to
+ * be accessed indirectly.
+ *
+ * Bits 12:11 - Unused.
+ *
+ * Bit 13 - Enable two-wire serial interface burst: When this bit is set, the two-wire serial interface decoder operates
+ * in burst mode for the indirect data register (READ burst and WRITE burst). The longest burst supported is 16 (128
+ * READ or WRITE cycles).
+ *
+ * Bit 14 - Enable indirect writing: When set, data from the indirect data register is written to the Indirect address
+ * location specified by [10:0] of this register except when auto-increment is set. Reading the same address location
+ * when this bit is reset to "0".
+ *
+ * Bit 15 - Address auto-increment: When this bit is set, the value in the indirect access address register is automatically
+ * incremented after every read or write, to the JPEG indirect access data register. This feature is used to emulate a
+ * burst access to memory or registers being accessed indirectly.
+ */
 #define MT9D111_REG_JPEG_INDIRECT_ACCESS_CONTROL                                        0x1E
+
+/**
+ * Writing to, and reading from this register, is equivalent to performing these operations on registers or memory being
+ * indirectly accessed. When address auto-increment bit is set in JPEG indirect access control register, multiple writes
+ * or reads from this register affect a burst data transfer. Data is written to or read from Indirect registers (when
+ * TestSRAM REG 0x0[1] is set to “0”), or the 800 x 16 SRAMs (when TestSRAM is set to “1”).
+ */
 #define MT9D111_REG_JPEG_INDIRECT_ACCESS_DATA                                           0x1F
+
+/**
+ * Bits 7:0 - Left window boundary.
+ *
+ * Bits 15:8 - Top window boundary.
+ *
+ * This register specifies top and left boundaries of the first from 16 (left-top) window used by AF measurement engine.
+ * The values programmed in the registers are desired boundaries divided by 8.
+ */
 #define MT9D111_REG_BOUNDARIES_OF_FIRST_AF_MEASUREMENT_WINDOW_TOP_LEFT                  0x40
+
+/**
+ * Bits 7:0 - Window width.
+ *
+ * Bits 15:8 - Window height.
+ *
+ * This register specifies height and width of the first from 16 window used by AF measurement engine. The values programmed
+ * in the registers are desired boundaries divided by 2.
+ */
 #define MT9D111_REG_BOUNDARIES_OF_FIRST_AF_MEASUREMENT_WINDOW_HEIGHT_WIDTH              0x41
+
+/**
+ * This register specifies number of pixels in the window used by AF measurement engine.
+ */
 #define MT9D111_REG_AF_MEASUREMENT_WINDOW_SIZE                                          0x42
+
+/**
+ * Bits 7:0 - Average Y in W11.
+ *
+ * Bits 15:8 - Average Y in W12.
+ */
 #define MT9D111_REG_AVERAGE_LUMINANCE_IN_AF_WINDOWS_W12_AND_W11                         0x43
+
+/**
+ * Bits 7:0 - Average Y in W13.
+ *
+ * Bits 15:8 - Average Y in W14.
+ */
 #define MT9D111_REG_AVERAGE_LUMINANCE_IN_AF_WINDOWS_W14_AND_W13                         0x44
+
+/**
+ * Bits 7:0 - Average Y in W21.
+ *
+ * Bits 15:8 - Average Y in W21.
+ */
 #define MT9D111_REG_AVERAGE_LUMINANCE_IN_AF_WINDOWS_W22_AND_W21                         0x45
+
+/**
+ * Bits 7:0 - Average Y in W23.
+ *
+ * Bits 15:8 - Average Y in W24.
+ */
 #define MT9D111_REG_AVERAGE_LUMINANCE_IN_AF_WINDOWS_W24_AND_W23                         0x46
+
+/**
+ * Bits 7:0 - Average Y in W31.
+ *
+ * Bits 15:8 - Average Y in W32.
+ */
 #define MT9D111_REG_AVERAGE_LUMINANCE_IN_AF_WINDOWS_W32_AND_W31                         0x47
+
+/**
+ * Bits 7:0 - Average Y in W33.
+ *
+ * Bits 15:8 - Average Y in W34.
+ */
 #define MT9D111_REG_AVERAGE_LUMINANCE_IN_AF_WINDOWS_W34_AND_W33                         0x48
+
+/**
+ * Bits 7:0 - Average Y in W41.
+ *
+ * Bits 15:8 - Average Y in W43.
+ */
 #define MT9D111_REG_AVERAGE_LUMINANCE_IN_AF_WINDOWS_W42_AND_W41                         0x49
+
+/**
+ * Bits 7:0 - Average Y in W43.
+ *
+ * Bits 15:8 - Average Y in W44.
+ */
 #define MT9D111_REG_AVERAGE_LUMINANCE_IN_AF_WINDOWS_W44_AND_W43                         0x4A
+
+/**
+ * Bits 3:0 - C1.
+ *
+ * Bits 7:4 - C2.
+ *
+ * Bits 11:8 - C3.
+ *
+ * Bits 15:12 - C4.
+ *
+ * This register specifies coefficient pairs for horizontal filter 1. Coefficient pairs C1 - C4 and center coefficient
+ * C0 define the filter kernel. Filter tap order is C4, C3, C2, C1, C0,C 1, C2, C3, C4 for odd-length configuration
+ * and C4, C3, C2, C1, C1, C2, C3, C4 for even-sized. R76:2[5] controls filter symmetry. When "0" filter the even-length
+ * configuration becomes C4, C3, C2, C1, -C1, -C2, -C3, -C4. The filter input is linear luminance from interpolation.
+ * Filter coefficients are specified as unsigned 4-bit numbers, 0..15. Their signs are specified in R76:2.
+ */
 #define MT9D111_REG_AF_FILTER_1_COEFFICIENTS                                            0x4B
+
+/**
+ * Bits 3:0 - Scale factor 0- 1; 1- /2; 2- /4; 3- /8; 4- /16; 5- /32; 6- /64; 7- /128; 8- /256; 9- /512; 11- *2; 12- *4;
+ * 13- *8; 14- *16; 15- *32.
+ *
+ * Bit 4 - 1 = odd length (9 taps); 0 = even length (8 taps, C0 ignored).
+ *
+ * Bit 5 - If "1" filter is symmetric else anti-symmetric.
+ *
+ * Bit 10:6 - Signs for filter coefficients C4(10):C0(6). 1 = negative, 0 = positive.
+ *
+ * Bits 15:12 - C0 coefficient, for the center tap in odd-sized filter.
+ *
+ * If filter coefficients larger than 1, the user must use appropriate scale factor to avoid overflow. For example,
+ * use scale factor /2 for filter 0 0 0 2 -2 0 0 0.
+ */
 #define MT9D111_REG_AF_FILTER_1_CONFIG                                                  0x4C
+
+/**
+ * Bits 7:0 - Average sharpness in W11 (top left).
+ *
+ * Bits 15:8 - Average sharpness in W12.
+ */
 #define MT9D111_REG_AF_FILTER_1_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W12_AND_W11    0x4D
+
+/**
+ * Bits 7:0 - Average sharpness in W13.
+ *
+ * Bits 15:8 - Average sharpness in W14 (top right).
+ */
 #define MT9D111_REG_AF_FILTER_1_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W14_AND_W13    0x4E
+
+/**
+ * Bits 7:0 - Average sharpness in W21.
+ *
+ * Bits 15:8 - Average sharpness in W22.
+ */
 #define MT9D111_REG_AF_FILTER_1_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W22_AND_W21    0x4F
+
+/**
+ * Bits 7:0 - Average sharpness in W23.
+ *
+ * Bits 15:8 - Average sharpness in W24.
+ */
 #define MT9D111_REG_AF_FILTER_1_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W24_AND_W23    0x50
+
+/**
+ * Bits 7:0 - Average sharpness in W31.
+ *
+ * Bits 15:8 - Average sharpness in W32.
+ */
 #define MT9D111_REG_AF_FILTER_1_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W32_AND_W31    0x51
+
+/**
+ * Bits 7:0 - Average sharpness in W33.
+ *
+ * Bits 15:8 - Average sharpness in W34.
+ */
 #define MT9D111_REG_AF_FILTER_1_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W34_AND_W33    0x52
+
+/**
+ * Bits 7:0 - Average sharpness in W41 (bottom left).
+ *
+ * Bits 15:8 - Average sharpness in W42.
+ */
 #define MT9D111_REG_AF_FILTER_1_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W42_AND_W41    0x53
+
+/**
+ * Bits 7:0 - Average sharpness in W43.
+ *
+ * Bits 15:8 - Average sharpness in W44 (bottom right).
+ */
 #define MT9D111_REG_AF_FILTER_1_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W44_AND_W43    0x54
+
+/**
+ * Bits 3:0 - C1.
+ *
+ * Bits 7:4 - C2.
+ *
+ * Bits 11:8 - C3.
+ *
+ * Bits 15:12 - C4.
+ *
+ * See R75:2
+ */
 #define MT9D111_REG_AF_FILTER_2_COEFFICIENTS                                            0x55
+
+/**
+ * Bits 3:0 - Scale factor.
+ *
+ * Bit 4 - Odd/even (9/8) filter size.
+ *
+ * Bit 5 - If "1" filter is symmetric else anti-symmetric.
+ *
+ * Bits 10:6 - Signs for filter coefficients C4(10):C0(6).
+ *
+ * Bits 15:12 - C0 coefficient.
+ *
+ * See R76:2.
+ */
 #define MT9D111_REG_AF_FILTER_2_CONFIG                                                  0x56
+
+/**
+ * Bits 7:0 - Average sharpness in W11.
+ *
+ * Bits 15:8 - Average sharpness in W12.
+ */
 #define MT9D111_REG_AF_FILTER_2_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W12_AND_W11    0x57
+
+/**
+ * Bits 7:0 - Average sharpness in W13.
+ *
+ * Bits 15:8 - Average sharpness in W14.
+ */
 #define MT9D111_REG_AF_FILTER_2_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W14_AND_W13    0x58
+
+/**
+ * Bits 7:0 - Average sharpness in W21.
+ *
+ * Bits 15:8 - Average sharpness in W22.
+ */
 #define MT9D111_REG_AF_FILTER_2_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W22_AND_W21    0x59
+
+/**
+ * Bits 7:0 - Average sharpness in W23.
+ *
+ * Bits 15:8 - Average sharpness in W24.
+ */
 #define MT9D111_REG_AF_FILTER_2_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W24_AND_W23    0x5A
+
+/**
+ * Bits 7:0 - Average sharpness in W31.
+ *
+ * Bits 15:8 - Average sharpness in W32.
+ */
 #define MT9D111_REG_AF_FILTER_2_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W32_AND_W31    0x5B
+
+/**
+ * Bits 7:0 - Average sharpness in W33.
+ *
+ * Bits 15:8 - Average sharpness in W34.
+ */
 #define MT9D111_REG_AF_FILTER_2_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W34_AND_W33    0x5C
+
+/**
+ * Bits 7:0 - Average sharpness in W41.
+ *
+ * Bits 15:8 - Average sharpness in W42.
+ */
 #define MT9D111_REG_AF_FILTER_2_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W42_AND_W41    0x5D
+
+/**
+ * Bits 7:0 - Average sharpness in W43.
+ *
+ * Bits 15:8 - Average sharpness in W44.
+ */
 #define MT9D111_REG_AF_FILTER_2_AVERAGE_SHARPNESS_MEASURE_FOR_AF_WINDOWS_W44_AND_W43    0x5E
+
+/**
+ * \brief This register controls behavior of lens correction.
+ *
+ * Bit 0 - Sign for the K*F(x)*F(y). If 0, then K is positive; if 1, then K is negative.
+ *
+ * Bit 1 - If 1, all the second X derivatives are doubled.
+ *
+ * Bit 2 - If 1, all the second Y derivatives are doubled.
+ *
+ * Bits 3:5 - Divisor for the first derivative, X direction. 000-/1, 001-/2, 010-/4, ... 111-/128. Also applies to
+ * second derivative.
+ *
+ * Bits 6:8 - Divisor for the first derivative, Y direction. 000-/1, 001-/2, 010-/4, ... 111-/128. Also applies to
+ * second derivative.
+ *
+ * Bit 9 - Shift column, LC specific.
+ *
+ * Bit 10 - Shift row, LC specific.
+ */
 #define MT9D111_REG_LENS_CORRECTION_CONTROL                                             0x80
+
+/**
+ * \brief Definition of X1 and X2 boundaries.
+ *
+ * Bits 7:0 - X2 boundary (/4) position.
+ *
+ * Bits 15:8 - X1 boundary (/4) position.
+ */
 #define MT9D111_REG_ZONE_BOUNDARIES_X1_AND_X2                                           0x81
+
+/**
+ * \brief Definition of X0 and X3 boundaries.
+ *
+ * Bits 7:0 - X0 boundary (/4) position.
+ *
+ * Bits 15:8 - X3 boundary (/4) position.
+ */
 #define MT9D111_REG_ZONE_BOUNDARIES_X0_AND_X3                                           0x82
+
+/**
+ * \brief Definition of X4 and X5 boundaries.
+ *
+ * Bits 7:0 - X4 boundary (/4) position.
+ *
+ * Bits 15:8 - X5 boundary (/4) position.
+ */
 #define MT9D111_REG_ZONE_BOUNDARIES_X4_AND_X5                                           0x83
+
+/**
+ * \brief Definition of Y1 and Y2 boundaries.
+ *
+ * Bits 7:0 - Y2 boundary (/4) position.
+ *
+ * Bits 15:8 - Y1 boundary (/4) position.
+ */
 #define MT9D111_REG_ZONE_BOUNDARIES_Y1_AND_Y2                                           0x84
+
+/**
+ * \brief Definition of Y0 and Y3 boundaries.
+ *
+ * Bits 7:0 - Y0 boundary (/4) position.
+ *
+ * Bits 15:8 - Y3 boundary (/4) position.
+ */
 #define MT9D111_REG_ZONE_BOUNDARIES_Y0_AND_Y3                                           0x85
+
+/**
+ * \brief Definition of Y4 and Y5 boundaries.
+ *
+ * Bits 7:0 - Y4 boundary (/4) position.
+ *
+ * Bits 15:8 - Y5 boundary (/4) position.
+ */
 #define MT9D111_REG_ZONE_BOUNDARIES_Y4_AND_Y5                                           0x86
 #define MT9D111_REG_CENTER_OFFSET                                                       0x87
 #define MT9D111_REG_FX_FOR_RED_COLOR_AT_THE_FIRST_PIXEL_OF_THE_ARRAY                    0x88
