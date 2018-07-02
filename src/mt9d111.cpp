@@ -434,4 +434,41 @@ bool MT9D111::SetOutputFormat(uint8_t format)
     return true;
 }
 
+bool MT9D111::SetResolution(uint8_t mode, uint16_t width, uint16_t height)
+{
+    this->SetRegisterPage(MT9D111_REG_PAGE_1);
+
+    switch(mode)
+    {
+        case MT9D111_MODE_PREVIEW:
+            // Output width
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, 0x2703);
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, width);
+
+            // Output height
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, 0x2705);
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, height);
+            break;
+        case MT9D111_MODE_CAPTURE:
+            // Output width
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, 0x2707);
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, width);
+
+            // Output height
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, 0x2709);
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, height);
+            break;
+        default:
+            return false;
+    }
+
+    // Sequence command
+    this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, 0xA103);
+    this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, 5);
+
+    this->SetRegisterPage(MT9D111_REG_PAGE_0);
+
+    return true;
+}
+
 //! \} End of mt9d111 group

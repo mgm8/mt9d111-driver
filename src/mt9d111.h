@@ -409,6 +409,16 @@ class MT9D111
          * \return TRUE/FALSE if successful or not.
          */
         bool SetOutputFormat(uint8_t format);
+        /**
+         * \brief Sets the output image resolution of the given mode.
+         *
+         * \param[in] mode is the output mode (MT9D111_MODE_PREVIEW or MT9D111_MODE_CAPTURE).
+         * \param[in] width is the output image width in pixels.
+         * \param[in] height is the output image height in pixels.
+         *
+         * \return TRUE/FALSE if successful or not.
+         */
+        bool SetResolution(uint8_t mode, uint16_t width, uint16_t height);
 };
 
 #endif // MT9D111_H_
