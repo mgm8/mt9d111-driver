@@ -436,6 +436,11 @@ bool MT9D111::SetOutputFormat(uint8_t format)
 
 bool MT9D111::SetResolution(uint8_t mode, uint16_t width, uint16_t height)
 {
+    if ((width > MT9D111_OUTPUT_MAX_WIDTH) or (height > MT9D111_OUTPUT_MAX_HEIGHT))
+    {
+        return false;
+    }
+
     this->SetRegisterPage(MT9D111_REG_PAGE_1);
 
     switch(mode)

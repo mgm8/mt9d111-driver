@@ -71,6 +71,10 @@
 #define MT9D111_OUTPUT_FORMAT_RAW_8     6
 #define MT9D111_OUTPUT_FORMAT_RAW_10    7
 
+// Max. resolution
+#define MT9D111_OUTPUT_MAX_WIDTH        1600
+#define MT9D111_OUTPUT_MAX_HEIGHT       1200
+
 /**
  * \class MT9D111
  *
