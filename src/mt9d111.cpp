@@ -476,4 +476,37 @@ bool MT9D111::SetResolution(uint8_t mode, uint16_t width, uint16_t height)
     return true;
 }
 
+bool MT9D111::SetSpecialEffects(uint8_t effect)
+{
+    this->SetRegisterPage(MT9D111_REG_PAGE_1);
+
+    switch(effect)
+    {
+        case MT9D111_SPECIAL_EFFECTS_DISABLED:
+            this->WriteReg(MT9D111_REG_SPECIAL_EFFECTS, MT9D111_SPECIAL_EFFECTS_DISABLED | (1 << 6));
+            break;
+        case MT9D111_SPECIAL_EFFECTS_MONOCHROME:
+            this->WriteReg(MT9D111_REG_SPECIAL_EFFECTS, MT9D111_SPECIAL_EFFECTS_MONOCHROME | (1 << 6));
+            break;
+        case MT9D111_SPECIAL_EFFECTS_SEPIA:
+            this->WriteReg(MT9D111_REG_SPECIAL_EFFECTS, MT9D111_SPECIAL_EFFECTS_SEPIA | (1 << 6));
+            break;
+        case MT9D111_SPECIAL_EFFECTS_NEGATIVE:
+            this->WriteReg(MT9D111_REG_SPECIAL_EFFECTS, MT9D111_SPECIAL_EFFECTS_NEGATIVE | (1 << 6));
+            break;
+        case MT9D111_SPECIAL_EFFECTS_SOLARIZATION_WITH_UNMODIFIED_UV:
+            this->WriteReg(MT9D111_REG_SPECIAL_EFFECTS, MT9D111_SPECIAL_EFFECTS_SOLARIZATION_WITH_UNMODIFIED_UV | (1 << 6));
+            break;
+        case MT9D111_SPECIAL_EFFECTS_SOLARIZATION_WITH_UV:
+            this->WriteReg(MT9D111_REG_SPECIAL_EFFECTS, MT9D111_SPECIAL_EFFECTS_SOLARIZATION_WITH_UV | (1 << 6));
+            break;
+        default:
+            return false;
+    }
+
+    this->SetRegisterPage(MT9D111_REG_PAGE_1);
+
+    return true;
+}
+
 //! \} End of mt9d111 group

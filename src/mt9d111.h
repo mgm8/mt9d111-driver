@@ -75,6 +75,14 @@
 #define MT9D111_OUTPUT_MAX_WIDTH        1600
 #define MT9D111_OUTPUT_MAX_HEIGHT       1200
 
+// Special Effects
+#define MT9D111_SPECIAL_EFFECTS_DISABLED                            0
+#define MT9D111_SPECIAL_EFFECTS_MONOCHROME                          1
+#define MT9D111_SPECIAL_EFFECTS_SEPIA                               2
+#define MT9D111_SPECIAL_EFFECTS_NEGATIVE                            3
+#define MT9D111_SPECIAL_EFFECTS_SOLARIZATION_WITH_UNMODIFIED_UV     4
+#define MT9D111_SPECIAL_EFFECTS_SOLARIZATION_WITH_UV                5
+
 /**
  * \class MT9D111
  *
@@ -423,6 +431,23 @@ class MT9D111
          * \return TRUE/FALSE if successful or not.
          */
         bool SetResolution(uint8_t mode, uint16_t width, uint16_t height);
+        /**
+         * \brief Sets special effects in the output images.
+         *
+         * \param[in] effect is the desired special effect. It can be:
+         * \parblock
+         *      - MT9D111_SPECIAL_EFFECTS_DISABLED
+         *      - MT9D111_SPECIAL_EFFECTS_MONOCHROME
+         *      - MT9D111_SPECIAL_EFFECTS_SEPIA
+         *      - MT9D111_SPECIAL_EFFECTS_NEGATIVE
+         *      - MT9D111_SPECIAL_EFFECTS_SOLARIZATION_WITH_UNMODIFIED_UV
+         *      - MT9D111_SPECIAL_EFFECTS_SOLARIZATION_WITH_UV
+         *      .
+         * \endparblock
+         *
+         * \return TRUE/FALSE if successful or not.
+         */
+        bool SetSpecialEffects(uint8_t effect);
 };
 
 #endif // MT9D111_H_
