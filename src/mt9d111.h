@@ -448,6 +448,16 @@ class MT9D111
          * \return TRUE/FALSE if successful or not.
          */
         bool SetSpecialEffects(uint8_t effect);
+
+        /**
+         * \brief Sets the auto exposure configuration.
+         *
+         * \param[in] mode
+         * \param[in] ae
+         *
+         * \return TRUE/FALSE if successful or not.
+         */
+        bool SetAutoExposure(uint8_t mode, uint8_t ae);
 };
 
 #endif // MT9D111_H_

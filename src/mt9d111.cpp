@@ -41,6 +41,7 @@
 #include "mt9d111_pins.h"
 #include "mt9d111_reg.h"
 #include "mt9d111_config.h"
+#include "mt9d111_driver.h"
 
 MT9D111::MT9D111()
 {
@@ -429,6 +430,13 @@ bool MT9D111::SetOutputFormat(uint8_t format)
             return false;
     }
 
+    if (format != MT9D111_OUTPUT_FORMAT_JPEG)
+    {
+        this->SetRegisterPage(MT9D111_REG_PAGE_2);
+
+        this->WriteReg(MT9D111_REG_JPEG_ENCODER_BYPASS, 0);
+    }
+
     this->SetRegisterPage(MT9D111_REG_PAGE_0);
 
     return true;
@@ -507,6 +515,10 @@ bool MT9D111::SetSpecialEffects(uint8_t effect)
     this->SetRegisterPage(MT9D111_REG_PAGE_1);
 
     return true;
+}
+
+bool MT9D111::SetAutoExposure(uint8_t mode, uint8_t ae)
+{
 }
 
 //! \} End of mt9d111 group
