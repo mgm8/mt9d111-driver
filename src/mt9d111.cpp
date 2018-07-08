@@ -201,11 +201,13 @@ bool MT9D111::SoftStandby(bool s)
     return this->WriteRegBit(MT9D111_REG_RESET, 2, s);
 }
 
-bool MT9D111::EnablePLL()
+bool MT9D111::EnablePLL(uint16_t val_1, uint16_t val_2)
 {
+    this->SetRegisterPage(MT9D111_REG_PAGE_0);
+
     // Program PLL frequency settings
-    if (!(this->WriteReg(MT9D111_REG_PLL_CONTROL_1, MT9D111_REG_PLL_CONTROL_1_VAL) and
-        this->WriteReg(MT9D111_REG_PLL_CONTROL_2, MT9D111_REG_PLL_CONTROL_2_VAL)))
+    if (!(this->WriteReg(MT9D111_REG_PLL_CONTROL_1, val_1) and
+        this->WriteReg(MT9D111_REG_PLL_CONTROL_2, val_2)))
     {
         return false;
     }
@@ -216,7 +218,7 @@ bool MT9D111::EnablePLL()
         return false;
     }
 
-    // Wait for PLL settling time
+    // Wait for PLL settling time (> 150 us)
     usleep(500);
 
     // Turn off PLL bypass

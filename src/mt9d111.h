@@ -194,9 +194,12 @@ class MT9D111
          * After PLL is enabled, the two-wire serial interface master can increase its communication
          * speed.
          *
+         * \param[in] val_1 is the fist value of the PLL frequency settings.
+         * \param[in] val_2 is the second value of the PLL frequency settings.
+         *
          * \return TRUE/FALSE if successful or not.
          */
-        bool EnablePLL();
+        bool EnablePLL(uint16_t val_1, uint16_t val_2);
         /**
          * \brief Sets the registers page to configure or read.
          *
