@@ -176,31 +176,6 @@ class MT9D111
          */
         bool SoftStandby(bool s);
         /**
-         * \brief Configure and enables the internal PLL.
-         *
-         * Since the input clock frequency is unknown, the part starts with PLL disabled.
-         * The default MNP values are for 10 MHz, with 80 MHz as target. For other frequencies,
-         * calculate and program appropriate MNP values. PLL programming and power-up sequence
-         * is as follows:
-         *     - 1) Program PLL frequency settings, R0x66-67:0
-         *     - 2) Power up PLL, R0x65:0[14] = 0
-         *     - 3) Wait for PLL settling time >150 us
-         *     - 4) Turn off PLL bypass, R0x65:2[15] = 0
-         *     .
-         *
-         * Allow one complete frame to effect the correct integration time after enabling PLL.
-         *
-         * Note: Until PLL is enabled the two-wire serial interface may be limited in speed.
-         * After PLL is enabled, the two-wire serial interface master can increase its communication
-         * speed.
-         *
-         * \param[in] val_1 is the fist value of the PLL frequency settings.
-         * \param[in] val_2 is the second value of the PLL frequency settings.
-         *
-         * \return TRUE/FALSE if successful or not.
-         */
-        bool EnablePLL(uint16_t val_1, uint16_t val_2);
-        /**
          * \brief Sets the registers page to configure or read.
          *
          * Hardware registers are organized into several pages. Page 0 contains sensor controls.
@@ -394,6 +369,31 @@ class MT9D111
          * \return TRUE/FALSE if the device is connected/working or not. 
          */
         bool CheckDevice();
+        /**
+         * \brief Configure and enables the internal PLL.
+         *
+         * Since the input clock frequency is unknown, the part starts with PLL disabled.
+         * The default MNP values are for 10 MHz, with 80 MHz as target. For other frequencies,
+         * calculate and program appropriate MNP values. PLL programming and power-up sequence
+         * is as follows:
+         *     - 1) Program PLL frequency settings, R0x66-67:0
+         *     - 2) Power up PLL, R0x65:0[14] = 0
+         *     - 3) Wait for PLL settling time >150 us
+         *     - 4) Turn off PLL bypass, R0x65:2[15] = 0
+         *     .
+         *
+         * Allow one complete frame to effect the correct integration time after enabling PLL.
+         *
+         * Note: Until PLL is enabled the two-wire serial interface may be limited in speed.
+         * After PLL is enabled, the two-wire serial interface master can increase its communication
+         * speed.
+         *
+         * \param[in] val_1 is the fist value of the PLL frequency settings.
+         * \param[in] val_2 is the second value of the PLL frequency settings.
+         *
+         * \return TRUE/FALSE if successful or not.
+         */
+        bool EnablePLL(uint16_t val_1, uint16_t val_2);
         /**
          * \brief Sets the operation mode (or context) of the sensor.
          *
