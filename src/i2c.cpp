@@ -21,8 +21,6 @@
  */
 
 /**
- * \file i2c.cpp
- * 
  * \brief I2C Linux driver implementation.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>

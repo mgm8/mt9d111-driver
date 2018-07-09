@@ -21,8 +21,6 @@
  */
 
 /**
- * \file mt9d111.h
- * 
  * \brief MT9D111 driver definition.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -99,8 +97,6 @@
 #define MT9D111_AUTO_EXPOSURE_FAST_SETTLING_PLUS_METERING           4
 
 /**
- * \class MT9D111
- *
  * \brief Class to implement the Micron MT9D111 image sensor.
  */
 class MT9D111
@@ -110,26 +106,29 @@ class MT9D111
         bool is_open;   /**< Flag to indicate if the I2C communication is open or not. */
         GPIO *reset;    /**< RESET pin. */
         GPIO *standby;  /**< STANDBY pin. */
+
         /**
          * \brief Reads the value of a bit from a register.
          *
-         * \param adr is the address of the register.
-         * \param bit is the bit position to read.
-         * \param state is a pointer to store the bit value.
+         * \param[in] adr is the address of the register.
+         * \param[in] bit is the bit position to read.
+         * \param[in,out] state is a pointer to store the bit value.
          *
          * \return TRUE/FALSE if the reading was successful or not.
          */
         bool ReadRegBit(uint8_t adr, uint8_t bit, bool *state);
+
         /**
          * \brief Changes a register bit.
          *
-         * \param adr is the address of the register.
-         * \param bit is the bit position to write.
-         * \param state is the new state of the bit position (high or low/true or false).
+         * \param[in] adr is the address of the register.
+         * \param[in] bit is the bit position to write.
+         * \param[in] state is the new state of the bit position (high or low/true or false).
          *
          * \return TRUE/FALSE if the writing was successful or not.
          */
         bool WriteRegBit(uint8_t adr, uint8_t bit, bool state);
+
         /**
          * \brief Hard resets the sensor.
          *
@@ -140,7 +139,7 @@ class MT9D111
          * clock cycles (EXTCLK), the two-wire serial interface is ready to accept
          * commands on the two-wire serial interface.
          *
-         * Note: Reset should not be activated while STANDBY is asserted.
+         * \note Reset should not be activated while STANDBY is asserted.
          *
          * To activate a hard reset sequence to the camera:
          *     - 1) Wait for all supplies to be stable.
@@ -149,11 +148,12 @@ class MT9D111
          *     - 4) Wait 24 clock cycles before using the two-wire serial interface.
          *     .
          *
-         * Reference: MT9D131 Developer Guide. Hard Reset Sequence. Page 12.
+         * \see MT9D131 Developer Guide. Hard Reset Sequence. Page 12.
          *
          * \return TRUE/FALSE if successful or not.
          */
         bool HardReset();
+
         /**
          * \brief Soft resets the sensor.
          *
@@ -169,27 +169,30 @@ class MT9D111
          * Note: No access to the MT9D131 registers (both page 1 and page 2) is possible
          * during softreset.
          *
-         * Reference: MT9D131 Developer Guide. Soft Reset Sequence. Page 12.
+         * \see MT9D131 Developer Guide. Soft Reset Sequence. Page 12.
          *
          * \return TRUE/FALSE if successful or not.
          */
         bool SoftReset();
+
         /**
          * \brief Enables/Disables the hard standby.
          *
-         * \param s is TRUE/FALSE to enable or disable the hard standby.
+         * \param[in] s is TRUE/FALSE to enable or disable the hard standby.
          *
          * \return TRUE/FALSE if successful or not.
          */
         bool HardStandby(bool s);
+
         /**
          * \brief Enables/Disables the soft standby.
          *
-         * \param s is TRUE/FALSE to enable or disable the soft standby.
+         * \param[in] s is TRUE/FALSE to enable or disable the soft standby.
          *
          * \return TRUE/FALSE if successful or not.
          */
         bool SoftStandby(bool s);
+
         /**
          * \brief Sets the registers page to configure or read.
          *
@@ -199,76 +202,87 @@ class MT9D111
          * After that all READs and WRITEs to registers 0..255 except R0xF0 and R0xF1, is directed to
          * the selected page. R0xF0 and R0xF1 are special registers and are present on all pages.
          *
-         * \param page is the registers page to set. It can be:
-         *            - MT9D111_REG_PAGE_0.
-         *            - MT9D111_REG_PAGE_1.
-         *            - MT9D111_REG_PAGE_2.
-         *            .
+         * \param[in] page is the registers page to set. It can be:
+         * \parblock
+         *      - MT9D111_REG_PAGE_0.
+         *      - MT9D111_REG_PAGE_1.
+         *      - MT9D111_REG_PAGE_2.
+         *      .
+         * \endparblock
          *
          * \return TRUE/FALSE if successful or not.
          */
         bool SetRegisterPage(uint16_t page);
+
         /**
          * \brief Gets the current active registers page.
          *
-         * Note: See "SetRegisterPage" for more details about registers pages.
+         * \note See "SetRegisterPage" for more details about registers pages.
          *
-         * \param page is pointer to store the active page number.
+         * \param[in,out] page is pointer to store the active page number.
          *
          * \return TRUE/FALSE if successful or not.
          */
         bool GetRegisterPage(uint16_t *page);
     public:
+
         /**
          * \brief Constructor without parameters.
          *
          * \return None
          */
         MT9D111();
+
         /**
          * \brief Constructor with I2C communication configuration.
          *
          * With this constructor, the I2C communication is enable and the device becomes ready to work.
          *
-         * \param dev_adr is the I2C device address.
+         * \param[in] dev_adr is the I2C device address.
          *
-         * \return None
+         * \return None.
          */
         MT9D111(const char *dev_adr);
+
         /**
          * \brief Destructor.
          *
          * \return None
          */
         ~MT9D111();
+
         /**
          * \brief Opens the communication with the sensor.
          *
-         * \param dev_adr is the I2C device address.
+         * \param[in] dev_adr is the I2C device address.
          *
          * \return TRUE/FALSE if successful or not.
          */
         bool Open(const char *dev_adr);
+
         /**
          * \brief Closes the communication with the sensor.
          *
          * \return TRUE/FALSE if successful or not.
          */
         bool Close();
+
         /**
          * \brief Resets the device.
          *
-         * \param type is the type of reset (hard or soft).
+         * \param[in] type is the type of reset (hard or soft).
          *
          * \return TRUE/FALSE if successful or not.
          */
         bool Reset(uint8_t type=MT9D111_RESET_HARD);
+
         /**
          * \brief Load the configuration parameters into the sensor.
          *
          * \return TRUE/FALSE if the configuration process was successful or not.
          */
         bool Config();
+
         /**
          * \brief Enables the standby mode.
          *
@@ -322,13 +336,14 @@ class MT9D111
          *          R0x0D:0[2] = 1 instead.
          *     .
          *
-         * Reference: MT9D131 Developer Guide. Standby Sequence. Page 13.
+         * \see MT9D131 Developer Guide. Standby Sequence. Page 13.
          *
-         * \param type is the type of standby to enter (MT9D111_STANDBY_HARD or MT9D111_STANDBY_SOFT).
+         * \param[in] type is the type of standby to enter (MT9D111_STANDBY_HARD or MT9D111_STANDBY_SOFT).
          *
          * \return TRUE/FALSE if successful or not.
          */
         bool EnterStandby(uint8_t type=MT9D111_STANDBY_HARD);
+
         /**
          * \brief Disables the stanby mode.
          *
@@ -351,31 +366,34 @@ class MT9D111
          *              .
          *     .
          *
-         * Reference: MT9D131 Developer Guide. Standby Sequence. Page 13.
+         * \see MT9D131 Developer Guide. Standby Sequence. Page 13.
          *
-         * \param type is the type of standby to enter (MT9D111_STANDBY_HARD or MT9D111_STANDBY_SOFT).
+         * \param[in] type is the type of standby to enter (MT9D111_STANDBY_HARD or MT9D111_STANDBY_SOFT).
          *
          * \return TRUE/FALSE if successful or not.
          */
         bool LeaveStandby(uint8_t type=MT9D111_STANDBY_HARD);
+
         /**
          * \brief Reads the value of a register of the device.
          *
-         * \param adr is the address of the register.
-         * \param val is a pointer to store the value of the register.
+         * \param[in] adr is the address of the register.
+         * \param[in,out] val is a pointer to store the value of the register.
          *
          * \return TRUE/FALSE if the reading was successful or not.
          */
         bool ReadReg(uint8_t adr, uint16_t *val);
+
         /**
          * \brief Writes a value to a register of the device.
          *
-         * \param adr is the address of the register.
-         * \param val is the value to write into the register.
+         * \param[in] adr is the address of the register.
+         * \param[in] val is the value to write into the register.
          *
          * \return TRUE/FALSE if the writing was successful or not.
          */
         bool WriteReg(uint8_t adr, uint16_t val);
+
         /**
          * \brief Checks if the sensor is connected and/or working.
          *
@@ -384,6 +402,7 @@ class MT9D111
          * \return TRUE/FALSE if the device is connected/working or not. 
          */
         bool CheckDevice();
+
         /**
          * \brief Configure and enables the internal PLL.
          *
@@ -399,7 +418,7 @@ class MT9D111
          *
          * Allow one complete frame to effect the correct integration time after enabling PLL.
          *
-         * Note: Until PLL is enabled the two-wire serial interface may be limited in speed.
+         * \note Until PLL is enabled the two-wire serial interface may be limited in speed.
          * After PLL is enabled, the two-wire serial interface master can increase its communication
          * speed.
          *
@@ -409,36 +428,41 @@ class MT9D111
          * \return TRUE/FALSE if successful or not.
          */
         bool EnablePLL(uint16_t val_1, uint16_t val_2);
+
         /**
          * \brief Sets the operation mode (or context) of the sensor.
          *
-         * \param mode is the operation mode.
-         *
-         * The operation mode can be:
+         * \param[in] mode is the operation mode. It can be:
+         * \parblock
          *     - MT9D111_MODE_PREVIEW for preview mode (usually, lower resolution and faster acquisition).
          *     - MT9D111_MODE_CAPTURE for capture mode (usually, higher resolution and slower acquisition).
          *     .
+         * \endparblock
          *
          * \return TRUE/FALSE if successful or not.
          */
         bool SetMode(uint8_t mode);
+
         /**
          * \brief Sets the output format of the frames.
          *
-         * \param format is the new output format. It can be:
-         *            - MT9D111_OUTPUT_FORMAT_YCbCr
-         *            - MT9D111_OUTPUT_FORMAT_RGB565
-         *            - MT9D111_OUTPUT_FORMAT_RGB555
-         *            - MT9D111_OUTPUT_FORMAT_RGB444x
-         *            - MT9D111_OUTPUT_FORMAT_RGBx444
-         *            - MT9D111_OUTPUT_FORMAT_JPEG
-         *            - MT9D111_OUTPUT_FORMAT_RAW_8
-         *            - MT9D111_OUTPUT_FORMAT_RAW_10
-         *            .
+         * \param[in] format is the new output format. It can be:
+         * \parblock
+         *      - MT9D111_OUTPUT_FORMAT_YCbCr
+         *      - MT9D111_OUTPUT_FORMAT_RGB565
+         *      - MT9D111_OUTPUT_FORMAT_RGB555
+         *      - MT9D111_OUTPUT_FORMAT_RGB444x
+         *      - MT9D111_OUTPUT_FORMAT_RGBx444
+         *      - MT9D111_OUTPUT_FORMAT_JPEG
+         *      - MT9D111_OUTPUT_FORMAT_RAW_8
+         *      - MT9D111_OUTPUT_FORMAT_RAW_10
+         *      .
+         * \endparblock
          *
          * \return TRUE/FALSE if successful or not.
          */
         bool SetOutputFormat(uint8_t format);
+
         /**
          * \brief Sets the output image resolution of the given mode.
          *
@@ -449,6 +473,7 @@ class MT9D111
          * \return TRUE/FALSE if successful or not.
          */
         bool SetResolution(uint8_t mode, uint16_t width, uint16_t height);
+
         /**
          * \brief Sets special effects in the output images.
          *

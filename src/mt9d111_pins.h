@@ -21,8 +21,6 @@
  */
 
 /**
- * \file mt9d111_pins.h
- * 
  * \brief MT9D111 driver pins definition.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -31,7 +29,8 @@
  * 
  * \date 31/03/2018
  * 
- * \addtogroup mt9d111
+ * \defgroup pin Pins
+ * \ingroup mt9d111
  * \{
  */
 
@@ -43,4 +42,4 @@
 
 #endif // MT9D111_PINS_H_
 
-//! \} End of mt9d111
+//! \} End of pins group

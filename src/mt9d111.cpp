@@ -21,8 +21,6 @@
  */
 
 /**
- * \file mt9d111.cpp
- * 
  * \brief MT9D111 driver definition implementation.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>

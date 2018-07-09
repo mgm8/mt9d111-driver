@@ -21,8 +21,6 @@
  */
 
 /**
- * \file i2c.h
- * 
  * \brief I2C Linux driver.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -32,7 +30,6 @@
  * \date 10/05/2017
  * 
  * \defgroup i2c Linux I2C Driver
- * \ingroup drivers
  * \{
  */
 
@@ -68,8 +65,6 @@
 #define I2C_SMBUS_I2C_BLOCK_MAX             32      // Not specified but we use same structure
 
 /**
- * \union I2C_SMBus_Data
- * 
  * \brief Structure used in the ioctl() calls.
  */
 union I2C_SMBus_Data
@@ -80,8 +75,6 @@ union I2C_SMBus_Data
 };
 
 /**
- * \struct I2C_SMBus_IOCtl_Data
- * 
  * \brief 
  */
 struct I2C_SMBus_IOCtl_Data
@@ -93,8 +86,6 @@ struct I2C_SMBus_IOCtl_Data
 };
 
 /**
- * \class I2C
- * 
  * \brief I2C master driver.
  * 
  * This class uses the ioctl() function to communicate with an slave I2C device.
@@ -103,6 +94,7 @@ class I2C
 {
     private:
         int fd;     /**< File descriptor. */
+
         /**
          * \brief 
          * 
@@ -115,32 +107,36 @@ class I2C
          */
         int SMBusAccess(int8_t rw, uint8_t command, uint16_t len, I2C_SMBus_Data *data);
     public:
+
         /**
          * \brief Class constructor (Only initialization).
          * 
          * \return None
          */
         I2C();
+
         /**
          * \brief Class constructor (Initialization and configuration).
          * 
-         * \param dev_adr is the I2C device address.
-         * \param dev_adr is the I2C slave ID (7-bit I2C address).
+         * \param[in] dev_adr is the I2C device address.
+         * \param[in] dev_adr is the I2C slave ID (7-bit I2C address).
          * 
          * \return None
          */
         I2C(const char* dev_adr, uint8_t dev_id);
+
         /**
          * \brief Class destructor.
          * 
          * \return None
          */
         ~I2C();
+
         /**
          * \brief Configures the I2C communication with an I2C device.
          * 
-         * \param dev_adr is the I2C device address.
-         * \param dev_id is the I2C slave ID (7-bit I2C address).
+         * \param[in] dev_adr is the I2C device address.
+         * \param[in] dev_id is the I2C slave ID (7-bit I2C address).
          * 
          * \return It returns:
          *          -\b TRUE if no error occurred during the configuration.
@@ -148,32 +144,36 @@ class I2C
          *          .
          */
         bool Setup(const char* dev_adr, uint8_t dev_id);
+
         /**
          * \brief Reads a byte from the device.
          * 
          * \return The byte read from the slave.
          */
         uint8_t Read();
+
         /**
          * \brief Reads a byte from a register of the device.
          * 
-         * \param reg_adr is the device register address.
+         * \param[in] reg_adr is the device register address.
          * 
          * \return The byte from the slave register.
          */
         uint8_t ReadReg8(uint8_t reg_adr);
+
         /**
          * \brief Reads a word (16-bit) from a register of the device.
          * 
-         * \param reg_adr is the device register address.
+         * \param[in] reg_adr is the device register address.
          * 
          * \return The word (16-bit) from the slave register.
          */
         uint16_t ReadReg16(uint8_t reg_adr);
+
         /**
          * \brief Write a byte to the device (No specific register).
          * 
-         * \param byte is the byte to be written to the device.
+         * \param[in] byte is the byte to be written to the device.
          * 
          * \return It returns:
          *          -\b TRUE if no error occurred during the transmission.
@@ -181,11 +181,12 @@ class I2C
          *          .
          */
         bool Write(uint8_t byte);
+
         /**
          * \brief Writes a byte to a register.
          * 
-         * \param reg_adr is the device register address.
-         * \param value is the value to be written in the register.
+         * \param[in] reg_adr is the device register address.
+         * \param[in] value is the value to be written in the register.
          * 
          * \return It returns:
          *          -\b TRUE if no error occurred during the transmission.
@@ -193,11 +194,12 @@ class I2C
          *          .
          */
         bool WriteReg8(uint8_t reg_adr, uint8_t value);
+
         /**
          * \brief Writes a word (16-bit) to a register.
          * 
-         * \param reg_adr is the device register address.
-         * \param value is the value to be written in the register.
+         * \param[in] reg_adr is the device register address.
+         * \param[in] value is the value to be written in the register.
          * 
          * \return It returns:
          *          -\b TRUE if no error occurred during the transmission.

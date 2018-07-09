@@ -21,8 +21,6 @@
  */
 
 /**
- * \file mt9d111_reg.h
- * 
  * \brief MT9D111 registers addresses.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -31,7 +29,8 @@
  * 
  * \date 02/03/2018
  * 
- * \addtogroup mt9d111
+ * \defgroup registers Registers
+ * \ingroup mt9d111
  * \{
  */
 
@@ -41,8 +40,6 @@
 #include <stdint.h>
 
 /**
- * \struct Register
- * 
  * \brief Struct to store an register address and its value.
  */
 struct Register
@@ -2088,4 +2085,4 @@ struct Register
 
 #endif // MT9D111_REG_H_
 
-//! \} End of mt9d111 group
+//! \} End of registers group

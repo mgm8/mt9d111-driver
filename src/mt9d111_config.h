@@ -21,8 +21,6 @@
  */
 
 /**
- * \file mt9d111_config.h
- * 
  * \brief MT9D111 general configuration parameters.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -31,7 +29,8 @@
  * 
  * \date 03/03/2018
  * 
- * \addtogroup mt9d111
+ * \defgroup config Configuration
+ * \ingroup mt9d111
  * \{
  */
 
@@ -284,21 +283,6 @@ const Register reg_vals_qvga_30fps[] =
     {MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA                          , MT9D111_REG_PAGE_1,   0x0003},    // MODE_GAM_CONT_B
     // Delay = 500 ms
 
-    // Set PLL (Mclk = 19 MHz , PCLK = 79 MHz)
-    {MT9D111_REG_PAGE_REGISTER                                          , MT9D111_REG_PAGE_0,   MT9D111_REG_PAGE_0},
-    {MT9D111_REG_CONTEXT_CONTROL                                        , MT9D111_REG_PAGE_0,   0x0000},
-    {MT9D111_REG_CLOCK_CONTROL                                          , MT9D111_REG_PAGE_0,   0xE000},
-    {MT9D111_REG_PLL_CONTROL_1                                          , MT9D111_REG_PAGE_0,   0x1001},    // PLL Control 1 = 4097
-    {MT9D111_REG_PLL_CONTROL_2                                          , MT9D111_REG_PAGE_0,   0x503 },    // PLL Control 2 = 1283
-    {MT9D111_REG_CLOCK_CONTROL                                          , MT9D111_REG_PAGE_0,   0xA000},    // Clock CNTRL: PLL ON = 40960
-    // Delay = 500 ms
-
-    {MT9D111_REG_PAGE_REGISTER                                          , MT9D111_REG_PAGE_0,   MT9D111_REG_PAGE_0},
-    {MT9D111_REG_CLOCK_CONTROL                                          , MT9D111_REG_PAGE_0,   0x2000},    // CLOCK_ENABLING
-
-    {MT9D111_REG_PAGE_REGISTER                                          , MT9D111_REG_PAGE_0},
-    // Delay = 500 ms
-
     {MT9D111_REG_PAGE_REGISTER                                          , MT9D111_REG_PAGE_1,   MT9D111_REG_PAGE_1},
     {MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS                       , MT9D111_REG_PAGE_1,   0x2703},    // MODE_OUTPUT_WIDTH_A
     {MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA                          , MT9D111_REG_PAGE_1,   0x0140},    // MODE_OUTPUT_WIDTH_A
@@ -320,4 +304,4 @@ const Register reg_vals_qvga_30fps[] =
 
 #endif // MT9D111_CONFIG_H_
 
-//! \} End of mt9d111 group
+//! \} End of config group

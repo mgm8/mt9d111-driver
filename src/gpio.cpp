@@ -21,8 +21,6 @@
  */
 
 /**
- * \file gpio.cpp
- * 
  * \brief GPIO Raspberry Pi driver implementation.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
