@@ -82,12 +82,16 @@
 #define MT9D111_SPECIAL_EFFECTS_SOLARIZATION_WITH_UV                5
 
 // Sensor States
-#define MT9D111_STATE_PREVIEW_ENTER                                 0
-#define MT9D111_STATE_PREVIEW                                       1
-#define MT9D111_STATE_PREVIEW_LEAVE                                 2
-#define MT9D111_STATE_CAPTURE_ENTER                                 3
-#define MT9D111_STATE_CAPTURE                                       4
-#define MT9D111_STATE_CAPTURE_LEAVE                                 5
+#define MT9D111_STATE_INITIALIZE                                    0
+#define MT9D111_STATE_CHANGE_TO_PREVIEW                             1
+#define MT9D111_STATE_PREVIEW_ENTER                                 2
+#define MT9D111_STATE_PREVIEW                                       3
+#define MT9D111_STATE_PREVIEW_LEAVE                                 4
+#define MT9D111_STATE_CHANGE_TO_CAPTURE                             5
+#define MT9D111_STATE_CAPTURE_ENTER                                 6
+#define MT9D111_STATE_CAPTURE                                       7
+#define MT9D111_STATE_CAPTURE_LEAVE                                 8
+#define MT9D111_STATE_STANDBY                                       9
 
 // Auto Exposure Configuration
 #define MT9D111_AUTO_EXPOSURE_OFF                                   0
@@ -537,6 +541,25 @@ class MT9D111
          * \return TRUE/FALSE if successful or not.
          */
         bool SetSpoofFrames(bool en, uint16_t width=640, uint16_t height=480);
+
+        /**
+         * \brief Writes a command to the sequencer of the driver.
+         *
+         * \param[in] cmd is the sequencer commad. It can be:
+         * \parblock
+         *      - MT9D111_DRIVER_VAR_SEQUENCER_CMD_RUN
+         *      - MT9D111_DRIVER_VAR_SEQUENCER_CMD_DO_PREVIEW
+         *      - MT9D111_DRIVER_VAR_SEQUENCER_CMD_DO_CAPTURE
+         *      - MT9D111_DRIVER_VAR_SEQUENCER_CMD_DO_STANDBY
+         *      - MT9D111_DRIVER_VAR_SEQUENCER_CMD_DO_LOCK
+         *      - MT9D111_DRIVER_VAR_SEQUENCER_CMD_REFRESH
+         *      - MT9D111_DRIVER_VAR_SEQUENCER_CMD_REFRESH_MODE
+         *      .
+         * \endparblock
+         *
+         * \return TRUE/FALSE if successful or not.
+         */
+        bool SequencerCmd(uint8_t cmd);
 };
 
 #endif // MT9D111_H_
