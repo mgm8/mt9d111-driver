@@ -37,6 +37,13 @@
 #ifndef MT9D111_DRIVER_H_
 #define MT9D111_DRIVER_H_
 
+// Address for physical access
+#define MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL                  (1 << 13)   /**< Logical access. */
+
+// Driver variables access
+#define MT9D111_DRIVER_VARIABLE_8_BIT_ACCESS                            (1 << 15)   /**< 8-bit access. */
+#define MT9D111_DRIVER_VARIABLE_16_BIT_ACCESS                           (0 << 15)   /**< 16-bit access. */
+
 // Drivers IDs (Table 9: Drivers IDs)
 #define MT9D111_DRIVER_ID_MONITOR                                       (0 << 8)    /**< Var name = mon. */
 #define MT9D111_DRIVER_ID_SEQUENCER                                     (1 << 8)    /**< Var name = seq. */
@@ -49,7 +56,11 @@
 #define MT9D111_DRIVER_ID_JPEG                                          (9 << 8)    /**< Var name = jpeg. */
 #define MT9D111_DRIVER_ID_HISTOGRAM                                     (11 << 8)   /**< Var name = hg. */
 
-// Driver Variables
+//************************************************
+//************************************************
+//-- Driver Variables ----------------------------
+//************************************************
+//************************************************
 
 // Monitor Driver (Table 10: Driver Variables-Monitor Driver (ID = 0))
 #define MT9D111_DRIVER_VAR_MONITOR_CMD                                  2           /**< . */
@@ -256,9 +267,76 @@
 #define MT9D111_DRIVER_VAR_FLICKER_DETECTION_R9_STEP_50                 19          /**< . */
 #define MT9D111_DRIVER_VAR_FLICKER_DETECTION_BUFFER                     21          /**< . */
 
-// Auto Focus
+// Auto Focus (Table 15: Driver Variables-Auto Focus Driver (ID = 5))
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_WINDOW_POS                        2           /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_WINDOW_SIZE                       3           /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MODE                              4           /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MODE_EX                           5           /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_NUM_STEPS                         6           /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_INIT_POS                          7           /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_NUM_STEPS_2                       8           /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_STEP_SIZE                         9           /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_WAKEUP_LINE                       10          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_ZONE_WEIGHTS                      12          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_DISTANCE_WEIGHT                   16          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_BEST_POSITION                     17          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_SHA_TH                            18          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_POSITIONS_0                       19          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_POSITIONS_1                       20          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_POSITIONS_2                       21          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_POSITIONS_3                       22          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_POSITIONS_4                       23          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_POSITIONS_5                       24          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_POSITIONS_6                       25          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_POSITIONS_7                       26          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_POSITIONS_8                       27          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_POSITIONS_9                       28          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_POSITIONS_10                      29          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_POSITIONS_11                      30          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_POSITIONS_12                      31          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_POSITIONS_13                      32          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_POSITIONS_14                      33          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_POSITIONS_15                      34          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_POSITIONS_16                      35          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_POSITIONS_17                      36          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_POSITIONS_18                      37          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_POSITIONS_19                      38          /**< . */
 
-// Auto Focus Mechanics
+// Auto Focus Mechanics (Table 16: Driver Variables-Auto Focus Mechanics Driver (ID = 6))
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_TYPE                    2           /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_CUR_POS                 3           /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_PRE_POS                 4           /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_STATUS                  5           /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_POS_MIN                 6           /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_POS_MAX                 7           /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_POS_MACRO               8           /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_BACK_LASH               9           /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_CUST_CTRLS              10          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_TIMER_VMT               11          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_TIMER_START_TIME        13          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_TIMER_STOP_TIME         15          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_TIMER_HI_WORD_MCLK_FREQ 17          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_TIMER_MAX_SHORT_DELAY   19          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_TIMER_MAX_LONG_DELAY    21          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_TIMER_MAX_QUICK_MOVE    23          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_TIMER_CONFIG            24          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_SI_VMT                  25          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_SI_CLK_MASK             27          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_SI_DATA_MASK            29          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_SI_CLK_QTR_PRD          31          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_SI_NEEDS_ACK            33          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_SI_SLAVE_ADDR           34          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_SM_ENAB_MASK            35          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_SM_DRV0_MASK            37          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_SM_DRV1_MASK            38          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_SM_DRV2_MASK            39          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_SM_DRV3_MASK            40          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_SM_DRVS_QTR_PRD         41          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_SM_DRVS_GEN_MODE        43          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_SM_PI_ENAB_MASK         44          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_SM_PI_OUT_MASK          46          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_SM_PI_EDGE_OFFSET       48          /**< . */
+#define MT9D111_DRIVER_VAR_AUTO_FOCUS_MECHANICS_SM_PI_CONFIG            49          /**< . */
 
 // Mode (Table 17: Driver Variables-Mode/Context Driver (ID = 7))
 #define MT9D111_DRIVER_VAR_MODE_VMT_POINTER                             0           /**< . */
@@ -348,8 +426,19 @@
 #define MT9D111_DRIVER_VAR_MODE_Y_RGB_OFFSET_A                          131         /**< . */
 #define MT9D111_DRIVER_VAR_MODE_Y_RGB_OFFSET_B                          132         /**< . */
 
-// JPEG
-
+// JPEG (Table 18: Driver Variables-JPEG Driver (ID = 9))
+#define MT9D111_DRIVER_VAR_JPEG_WIDTH                                   2           /**< . */
+#define MT9D111_DRIVER_VAR_JPEG_HEIGHT                                  4           /**< . */
+#define MT9D111_DRIVER_VAR_JPEG_FORMAT                                  6           /**< . */
+#define MT9D111_DRIVER_VAR_JPEG_CONFIG                                  7           /**< . */
+#define MT9D111_DRIVER_VAR_JPEG_RESTART_INT                             8           /**< . */
+#define MT9D111_DRIVER_VAR_JPEG_QSCALE1                                 10          /**< . */
+#define MT9D111_DRIVER_VAR_JPEG_QSCALE2                                 11          /**< . */
+#define MT9D111_DRIVER_VAR_JPEG_QSCALE3                                 12          /**< . */
+#define MT9D111_DRIVER_VAR_JPEG_TIMEOUT_FRAMES                          13          /**< . */
+#define MT9D111_DRIVER_VAR_JPEG_STATE                                   14          /**< . */
+#define MT9D111_DRIVER_VAR_JPEG_DATA_LENGTH_MSB                         15          /**< . */
+#define MT9D111_DRIVER_VAR_JPEG_DATA_LENGTH_LSB                         16          /**< . */
 
 // Histogram (Table 19: Driver Variables-Histogram Driver (ID = 11))
 #define MT9D111_DRIVER_VAR_HISTOGRAM_D_LEVEL_BUFFER_SPEED               2           /**< . */
@@ -364,6 +453,12 @@
 #define MT9D111_DRIVER_VAR_HISTOGRAM_D_LEVEL_BUF                        11          /**< . */
 #define MT9D111_DRIVER_VAR_HISTOGRAM_FACTOR_HI                          13          /**< . */
 #define MT9D111_DRIVER_VAR_HISTOGRAM_PERCENT_HI                         14          /**< . */
+
+//************************************************
+//************************************************
+//-- Driver Structs ------------------------------
+//************************************************
+//************************************************
 
 /**
  * \brief Monitor driver variables.
@@ -553,9 +648,23 @@ struct AutoWhiteBalance
 struct FlickerDetection
 {
     uint16_t vmt;                       /**< Reserved. */
-    uint8_t windowPosH;                 /**< . */
-    uint8_t windowHieght;               /**< . */
-    uint8_t mode;                       /**< . */
+    uint8_t windowPosH;                 /**< Width of flicker measurement window and position of its left boundary X0. */
+    uint8_t windowHieght;               /**< Bits [5:0] — flicker measurement window height in rows. */
+    uint8_t mode;                       /**< Mode switches and indicators. */
+    uint16_t wakeUpLine;                /**< Number of image row at which MCU wakes up to perform flicker detection. */
+    uint8_t smooth_cnt;                 /**< Reserved. */
+    uint8_t search_f1_50;               /**< Lower limit of period range of interest in 50Hz flicker detection. */
+    uint8_t search_f2_50;               /**< Upper limit of period range of interest in 50Hz flicker detection. */
+    uint8_t search_f1_60;               /**< Lower limit of period range of interest in 60Hz flicker detection. */
+    uint8_t search_f2_60;               /**< Upper limit of period range of interest in 60Hz flicker detection. */
+    uint8_t skipFrame;                  /**< Skip frame before subtracting two frames. */
+    uint8_t stat_min;                   /**< Flicker is considered detected if fd->stat_min out of fd->stat_max consecutive frames contain flicker (periodic signal of sought frequency). */
+    uint8_t stat_max;                   /**< See fl->stat_min. */
+    uint8_t stat;                       /**< Reserved. */
+    uint8_t minAmplitude;               /**< Reserved. */
+    uint16_t R9_step60;                 /**< Minimal shutter width step for 60Hz AC. */
+    uint16_t R9_step50;                 /**< Minimal shutter width step for 50Hz AC. */
+    uint8_t Buffer[48];                 /**< Reserved. */
 };
 
 /**
@@ -564,8 +673,66 @@ struct FlickerDetection
 struct AutoFocus
 {
     uint16_t Vmt;                       /**< Reserved. */
-    uint8_t windowPos;                  /**< . */
-    uint8_t windowSize;                 /**< . */
+    uint8_t windowPos;                  /**< Position of the upper left corner of the first AF window (W11). */
+    uint8_t windowSize;                 /**< Dimensions of the 4 x 4 array of AF windows. */
+    uint8_t mode;                       /**< Two mode switches and 5 bits reserved for use in default snapshot AF mode. */
+    uint8_t modeEx;                     /**< Four option switches and 4 status indicators. */
+    uint8_t numSteps;                   /**< Number of steps (lens positions tried) in the first scan. */
+    uint8_t initPos;                    /**< Number (index) of start position. */
+    uint8_t numSteps2;                  /**< Desired number of steps in second scan [3:0] and actual number of steps in the second scan [7:4]. */
+    uint8_t stepSize;                   /**< Logical step size for the second scan. */
+    uint16_t wakeUpLine;                /**< Number of image row at which the MCU wakes up to execute AF driver code. */
+    uint32_t zoneWeights;               /**< Weights of the AF windows or zones. */
+    uint16_t distanceWeight;            /**< Reserved. */
+    uint8_t bestPosition;               /**< This variable is used in 3 different ways depending on values of bits 6 and 7 of af->mode. */
+    uint8_t shaTH;                      /**< Sharpness score variability threshold. */
+    uint8_t positions[20];              /**< Programmable logical lens positions. */
+};
+
+/**
+ * \brief .
+ */
+struct Timer
+{
+    uint16_t vmt;                       /**< . */
+    uint16_t startTime;                 /**< . */
+    uint16_t stopTime;                  /**< . */
+    uint16_t hiWordMclkFreq;            /**< . */
+    uint16_t maxShortDelay;             /**< . */
+    uint16_t maxLongDelay;              /**< . */
+    uint8_t maxQuickMove;               /**< . */
+    uint8_t config;                     
+};
+
+/**
+ * \brief .
+ */
+struct SI
+{
+    uint16_t vmt;                       /**< . */
+    uint16_t clkMask;                   /**< . */
+    uint16_t dataMask;                  /**< . */
+    uint16_t clkQtrPrd;                 /**< . */
+    uint8_t needsAck;                   /**< . */
+    uint8_t slaveAddr;                  /**< . */
+};
+
+/**
+ * \brief .
+ */
+struct SM
+{
+    uint16_t enabMask;                  /**< . */
+    uint8_t drv0Mask;                   /**< . */
+    uint8_t drv1Mask;                   /**< . */
+    uint8_t drv2Mask;                   /**< . */
+    uint8_t drv3Mask;                   /**< . */
+    uint8_t drvsQtrPrd;                 /**< . */
+    uint8_t drvsGenMode;                /**< . */
+    uint16_t piEnabMask;                /**< . */
+    uint16_t piOutMask;                 /**< . */
+    uint8_t piEdgeOffset;               /**< . */
+    uint8_t piConfig;                   /**< . */
 };
 
 /**
@@ -574,6 +741,18 @@ struct AutoFocus
 struct AutoFocusMechanics
 {
     uint16_t vmt;                       /**< Pointer to the driver’s virtual method table (VMT). */
+    uint8_t type;                       /**< . */
+    uint8_t curPos;                     /**< . */
+    uint8_t prePos;                     /**< . */
+    uint8_t status;                     /**< . */
+    uint8_t posMin;                     /**< . */
+    uint8_t posMax;                     /**< . */
+    uint8_t posMacro;                   /**< . */
+    uint8_t backlash;                   /**< . */
+    uint8_t custCtrl;                   /**< . */
+    Timer timer;                        /**< . */
+    SI si;                              /**< . */
+    SM sm;                              /**< . */
 };
 
 /**
@@ -674,19 +853,19 @@ struct Mode
  */
 struct JPEG
 {
-    uint16_t vmt;                       /**< . */
-    uint16_t width;                     /**< . */
-    uint16_t height;                    /**< . */
-    uint8_t format;                     /**< . */
-    uint8_t config;                     /**< . */
-    uint16_t restartInt;                /**< . */
-    uint8_t qscale1;                    /**< . */
-    uint8_t qscale2;                    /**< . */
-    uint8_t qscale3;                    /**< . */
-    uint8_t timeoutFrames;              /**< . */
-    uint8_t state;                      /**< . */
-    uint8_t dataLengthMSB;              /**< . */
-    uint16_t dataLengthLSBs;            /**< . */
+    uint16_t vmt;                       /**< Reserved. */
+    uint16_t width;                     /**< Image width (see mode.output_width). */
+    uint16_t height;                    /**< Image height (see mode.output_height). */
+    uint8_t format;                     /**< Image format. */
+    uint8_t config;                     /**< Configuration and handshaking. */
+    uint16_t restartInt;                /**< Restart marker interval. */
+    uint8_t qscale1;                    /**< Bit 6:0 - scaling factor for first set of quantization tables. Bit 7 - 1, new scaling factor value. */
+    uint8_t qscale2;                    /**< Bit 6:0 - scaling factor for second set of quantization tables. Bit 7 - if 1, new scaling factor value. */
+    uint8_t qscale3;                    /**< Bit 6:0 - scaling factor for third set of quantization tables. Bit 7 - if 1, new scaling factor value. */
+    uint8_t timeoutFrames;              /**< Number of frames to time out when host is not responding (setting bit 3 of config) to an unsuccessful JPEG frame while bit 1 of config is set. */
+    uint8_t state;                      /**< JPEG driver state. */
+    uint8_t dataLengthMSB;              /**< Bit [23:16] of previous frame JPEG data length. */
+    uint16_t dataLengthLSBs;            /**< Bit [15:0] of previous frame JPEG data length. */
 };
 
 /**
@@ -694,18 +873,19 @@ struct JPEG
  */
 struct Histogram
 {
+    uint16_t vmt;                       /**< Reserved. */
     uint8_t DlevelBufferSpeed;          /**< Responde speed, 1-32; 32-maximum speed. */
-    uint8_t scaleGFactor;               /**< . */
-    uint8_t maxDLevel;                  /**< . */
-    uint8_t percent;                    /**< . */
-    uint8_t lowerLimit1;                /**< . */
-    uint8_t binSize1;                   /**< . */
-    uint8_t lowerLimit2;                /**< . */
-    uint8_t binSize2;                   /**< . */
-    uint8_t Dlevel;                     /**< . */
-    uint16_t DLevel_buf;                /**< . */
-    uint8_t factorHi;                   /**< . */
-    uint8_t percentHi;                  /**< . */
+    uint8_t scaleGFactor;               /**< Scale factor for histogram window size. */
+    uint8_t maxDLevel;                  /**< Maximum subtracted offset. Set to "0" to disable subtraction. */
+    uint8_t percent;                    /**< Percent of pixels to keep black; 10-bits data / 4. Setting >0 clips black. */
+    uint8_t lowerLimit1;                /**< Offset for bin 0, divided by 4 on 10-bit scale. */
+    uint8_t binSize1;                   /**< Bin width, 0–4LSB, 1–8LSB, 2–16LSB, 7–512LSB on a 10-bit scale. */
+    uint8_t lowerLimit2;                /**< Offset for bin 0, divided by 4 on 10-bit scale. */
+    uint8_t binSize2;                   /**< Bin width, 0–4LSB, 1–8LSB, 2–16LSB, 7–512LSB on a 10-bit scale. */
+    uint8_t Dlevel;                     /**< Current subtracted offset. */
+    uint16_t DLevel_buf;                /**< Buffered current offset. */
+    uint8_t factorHi;                   /**< Factor of overexposure compensation for mettering mode. */
+    uint8_t percentHi;                  /**< Highlight clipping 255 - 100%. */
 };
 
 /**
