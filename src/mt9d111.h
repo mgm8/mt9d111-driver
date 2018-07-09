@@ -516,6 +516,27 @@ class MT9D111
          * \return TRUE/FALSE if successful or not.
          */
         bool SetAutoExposure(uint8_t state, uint8_t config);
+
+        /**
+         * \brief Sets the FIFO usage.
+         *
+         * \param[in] en enables/disables the FIFO.
+         * \param[in] spoof enables/disables the spoof frames.
+         *
+         * \return TRUE/FALSE if successful or not.
+         */
+        bool SetFIFO(bool en, bool spoof=false);
+
+        /**
+         * \brief Sets the Spoof frames.
+         *
+         * \param[in] en enables/disables the spoof frames.
+         * \param[in] width is the spoof frames width in pixels.
+         * \param[in] height if the spoof frames height in pixels.
+         *
+         * \return TRUE/FALSE if successful or not.
+         */
+        bool SetSpoofFrames(bool en, uint16_t width=640, uint16_t height=480);
 };
 
 #endif // MT9D111_H_

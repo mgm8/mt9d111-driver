@@ -581,4 +581,40 @@ bool MT9D111::SetAutoExposure(uint8_t state, uint8_t config)
     return true;
 }
 
+bool MT9D111::SetFIFO(bool en, bool spoof)
+{
+    this->SetRegisterPage(MT9D111_REG_PAGE_2);
+
+    if (en)
+    {
+        this->WriteReg(MT9D111_REG_JPEG_ENCODER_BYPASS, 1);
+    }
+    else
+    {
+        this->WriteReg(MT9D111_REG_JPEG_ENCODER_BYPASS, 0);
+    }
+
+    this->SetSpoofFrames(spoof);
+
+    return true;
+}
+
+bool MT9D111::SetSpoofFrames(bool en, uint16_t width, uint16_t height)
+{
+    this->SetRegisterPage(MT9D111_REG_PAGE_2);
+
+    if (en)
+    {
+        this->WriteRegBit(MT9D111_REG_OUTPUT_CONFIG, 0, true);
+        this->WriteReg(MT9D111_REG_SPOOF_FRAME_WIDTH, width);
+        this->WriteReg(MT9D111_REG_SPOOF_FRAME_HEIGHT, height);
+    }
+    else
+    {
+        this->WriteRegBit(MT9D111_REG_OUTPUT_CONFIG, 0, false);
+    }
+
+    return true;
+}
+
 //! \} End of mt9d111 group
