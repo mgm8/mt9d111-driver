@@ -44,36 +44,36 @@
 #include "gpio.h"
 
 // I2C addresses
-#define MT9D111_CONFIG_I2C_ADR_LOW      0x48
-#define MT9D111_CONFIG_I2C_ADR_HIGH     0xBA
+#define MT9D111_CONFIG_I2C_ADR_LOW                                  0x48
+#define MT9D111_CONFIG_I2C_ADR_HIGH                                 0xBA
 
-#define MT9D111_CONFIG_I2C_ID           MT9D111_CONFIG_I2C_ADR_LOW
+#define MT9D111_CONFIG_I2C_ID                                       MT9D111_CONFIG_I2C_ADR_LOW
 
 // Reset types
-#define MT9D111_RESET_HARD              0
-#define MT9D111_RESET_SOFT              1
+#define MT9D111_RESET_HARD                                          0
+#define MT9D111_RESET_SOFT                                          1
 
 // Standby types
-#define MT9D111_STANDBY_HARD            0
-#define MT9D111_STANDBY_SOFT            1
+#define MT9D111_STANDBY_HARD                                        0
+#define MT9D111_STANDBY_SOFT                                        1
 
 // Operation modes (or context)
-#define MT9D111_MODE_PREVIEW            0
-#define MT9D111_MODE_CAPTURE            1
+#define MT9D111_MODE_PREVIEW                                        0
+#define MT9D111_MODE_CAPTURE                                        1
 
 // Output formats
-#define MT9D111_OUTPUT_FORMAT_YCbCr     0
-#define MT9D111_OUTPUT_FORMAT_RGB565    1
-#define MT9D111_OUTPUT_FORMAT_RGB555    2
-#define MT9D111_OUTPUT_FORMAT_RGB444x   3
-#define MT9D111_OUTPUT_FORMAT_RGBx444   4
-#define MT9D111_OUTPUT_FORMAT_JPEG      5
-#define MT9D111_OUTPUT_FORMAT_RAW_8     6
-#define MT9D111_OUTPUT_FORMAT_RAW_10    7
+#define MT9D111_OUTPUT_FORMAT_YCbCr                                 0
+#define MT9D111_OUTPUT_FORMAT_RGB565                                1
+#define MT9D111_OUTPUT_FORMAT_RGB555                                2
+#define MT9D111_OUTPUT_FORMAT_RGB444x                               3
+#define MT9D111_OUTPUT_FORMAT_RGBx444                               4
+#define MT9D111_OUTPUT_FORMAT_JPEG                                  5
+#define MT9D111_OUTPUT_FORMAT_RAW_8                                 6
+#define MT9D111_OUTPUT_FORMAT_RAW_10                                7
 
 // Max. resolution
-#define MT9D111_OUTPUT_MAX_WIDTH        1600
-#define MT9D111_OUTPUT_MAX_HEIGHT       1200
+#define MT9D111_OUTPUT_MAX_WIDTH                                    1600
+#define MT9D111_OUTPUT_MAX_HEIGHT                                   1200
 
 // Special Effects
 #define MT9D111_SPECIAL_EFFECTS_DISABLED                            0
@@ -82,6 +82,21 @@
 #define MT9D111_SPECIAL_EFFECTS_NEGATIVE                            3
 #define MT9D111_SPECIAL_EFFECTS_SOLARIZATION_WITH_UNMODIFIED_UV     4
 #define MT9D111_SPECIAL_EFFECTS_SOLARIZATION_WITH_UV                5
+
+// Sensor States
+#define MT9D111_STATE_PREVIEW_ENTER                                 0
+#define MT9D111_STATE_PREVIEW                                       1
+#define MT9D111_STATE_PREVIEW_LEAVE                                 2
+#define MT9D111_STATE_CAPTURE_ENTER                                 3
+#define MT9D111_STATE_CAPTURE                                       4
+#define MT9D111_STATE_CAPTURE_LEAVE                                 5
+
+// Auto Exposure Configuration
+#define MT9D111_AUTO_EXPOSURE_OFF                                   0
+#define MT9D111_AUTO_EXPOSURE_FAST_SETTLING                         1
+#define MT9D111_AUTO_EXPOSURE_MANUAL                                2
+#define MT9D111_AUTO_EXPOSURE_CONTINUOUS                            3
+#define MT9D111_AUTO_EXPOSURE_FAST_SETTLING_PLUS_METERING           4
 
 /**
  * \class MT9D111
@@ -455,12 +470,27 @@ class MT9D111
         /**
          * \brief Sets the auto exposure configuration.
          *
-         * \param[in] mode
-         * \param[in] ae
+         * \param[in] state is the sensor state. It can be:
+         * \parblock
+         *      - MT9D111_STATE_PREVIEW_ENTER
+         *      - MT9D111_STATE_PREVIEW
+         *      - MT9D111_STATE_PREVIEW_LEAVE
+         *      - MT9D111_STATE_CAPTURE_ENTER
+         *      .
+         * \endparblock
+         * \param[in] config is the auto exposure configuration for the given state. It can be:
+         * \parblock
+         *      - MT9D111_AUTO_EXPOSURE_OFF
+         *      - MT9D111_AUTO_EXPOSURE_FAST_SETTLING
+         *      - MT9D111_AUTO_EXPOSURE_MANUAL
+         *      - MT9D111_AUTO_EXPOSURE_CONTINUOUS
+         *      - MT9D111_AUTO_EXPOSURE_FAST_SETTLING_PLUS_METERING
+         *      .
+         * \endparblock
          *
          * \return TRUE/FALSE if successful or not.
          */
-        bool SetAutoExposure(uint8_t mode, uint8_t ae);
+        bool SetAutoExposure(uint8_t state, uint8_t config);
 };
 
 #endif // MT9D111_H_

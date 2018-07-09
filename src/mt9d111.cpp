@@ -457,31 +457,44 @@ bool MT9D111::SetResolution(uint8_t mode, uint16_t width, uint16_t height)
     {
         case MT9D111_MODE_PREVIEW:
             // Output width
-            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, 0x2703);
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_16_BIT_ACCESS |
+                                                                         MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL |
+                                                                         MT9D111_DRIVER_ID_MODE |
+                                                                         MT9D111_DRIVER_VAR_MODE_OUTPUT_WIDTH_A);
             this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, width);
 
             // Output height
-            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, 0x2705);
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_16_BIT_ACCESS |
+                                                                         MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL |
+                                                                         MT9D111_DRIVER_ID_MODE |
+                                                                         MT9D111_DRIVER_VAR_MODE_OUTPUT_HEIGHT_A);
             this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, height);
             break;
         case MT9D111_MODE_CAPTURE:
             // Output width
-            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, 0x2707);
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_16_BIT_ACCESS |
+                                                                         MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL |
+                                                                         MT9D111_DRIVER_ID_MODE |
+                                                                         MT9D111_DRIVER_VAR_MODE_OUTPUT_WIDTH_B);
             this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, width);
 
             // Output height
-            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, 0x2709);
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_16_BIT_ACCESS |
+                                                                         MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL |
+                                                                         MT9D111_DRIVER_ID_MODE |
+                                                                         MT9D111_DRIVER_VAR_MODE_OUTPUT_HEIGHT_B);
             this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, height);
             break;
         default:
             return false;
     }
 
-    // Sequence command
-    this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, 0xA103);
-    this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, 5);
-
-    this->SetRegisterPage(MT9D111_REG_PAGE_0);
+    // Sequencer command
+    this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_8_BIT_ACCESS |
+                                                                 MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL |
+                                                                 MT9D111_DRIVER_ID_SEQUENCER |
+                                                                 MT9D111_DRIVER_VAR_SEQUENCER_CMD);
+    this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, MT9D111_DRIVER_VAR_SEQUENCER_CMD_REFRESH);
 
     return true;
 }
@@ -519,8 +532,55 @@ bool MT9D111::SetSpecialEffects(uint8_t effect)
     return true;
 }
 
-bool MT9D111::SetAutoExposure(uint8_t mode, uint8_t ae)
+bool MT9D111::SetAutoExposure(uint8_t state, uint8_t config)
 {
+    this->SetRegisterPage(MT9D111_REG_PAGE_1);
+
+    uint16_t seq_state;
+
+    switch(state)
+    {
+        case MT9D111_STATE_PREVIEW_ENTER:
+            seq_state = MT9D111_DRIVER_VAR_SEQUENCER_PREVIEW_PARAMS_0_AE;
+            break;
+        case MT9D111_STATE_PREVIEW:
+            seq_state = MT9D111_DRIVER_VAR_SEQUENCER_PREVIEW_PARAMS_1_AE;
+            break;
+        case MT9D111_STATE_PREVIEW_LEAVE:
+            seq_state = MT9D111_DRIVER_VAR_SEQUENCER_PREVIEW_PARAMS_2_AE;
+            break;
+        case MT9D111_STATE_CAPTURE_ENTER:
+            seq_state = MT9D111_DRIVER_VAR_SEQUENCER_PREVIEW_PARAMS_3_AE;
+            break;
+        default:
+            return false;
+    }
+
+    this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_8_BIT_ACCESS |
+                                                                 MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL |
+                                                                 MT9D111_DRIVER_ID_SEQUENCER |
+                                                                 seq_state);
+
+    switch(config)
+    {
+        case MT9D111_AUTO_EXPOSURE_OFF:                             break;
+        case MT9D111_AUTO_EXPOSURE_FAST_SETTLING:                   break;
+        case MT9D111_AUTO_EXPOSURE_MANUAL:                          break;
+        case MT9D111_AUTO_EXPOSURE_CONTINUOUS:                      break;
+        case MT9D111_AUTO_EXPOSURE_FAST_SETTLING_PLUS_METERING:     break;
+        default:                                                    return false;
+    }
+
+    this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, config);
+
+    // Sequencer command
+    this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_8_BIT_ACCESS |
+                                                                 MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL |
+                                                                 MT9D111_DRIVER_ID_SEQUENCER |
+                                                                 MT9D111_DRIVER_VAR_SEQUENCER_CMD);
+    this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, MT9D111_DRIVER_VAR_SEQUENCER_CMD_REFRESH);
+
+    return true;
 }
 
 //! \} End of mt9d111 group

@@ -129,6 +129,14 @@
 #define MT9D111_DRIVER_VAR_SEQUENCER_PREVIEW_PARAMS_3_FLASH             60          /**< . */
 #define MT9D111_DRIVER_VAR_SEQUENCER_PREVIEW_PARAMS_3_SKIP_FRAME        61          /**< . */
 
+#define MT9D111_DRIVER_VAR_SEQUENCER_CMD_RUN                            0           /**< Run. */
+#define MT9D111_DRIVER_VAR_SEQUENCER_CMD_DO_PREVIEW                     1           /**< Do Preview. */
+#define MT9D111_DRIVER_VAR_SEQUENCER_CMD_DO_CAPTURE                     2           /**< Do Capture. */
+#define MT9D111_DRIVER_VAR_SEQUENCER_CMD_DO_STANDBY                     3           /**< Do Standby. */
+#define MT9D111_DRIVER_VAR_SEQUENCER_CMD_DO_LOCK                        4           /**< Do lock. */
+#define MT9D111_DRIVER_VAR_SEQUENCER_CMD_REFRESH                        5           /**< Refresh. */
+#define MT9D111_DRIVER_VAR_SEQUENCER_CMD_REFRESH_MODE                   6           /**< Refresh mode. */
+
 // Auto Exposure (Table 12: Driver Variables-Auto Exposure Driver (ID = 2))
 #define MT9D111_DRIVER_VAR_AUTO_EXPOSURE_WINDOW_POS                     2           /**< . */
 #define MT9D111_DRIVER_VAR_AUTO_EXPOSURE_WINDOW_SIZE                    3           /**< . */
