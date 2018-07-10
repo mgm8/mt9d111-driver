@@ -100,6 +100,12 @@
 #define MT9D111_AUTO_EXPOSURE_CONTINUOUS                            3
 #define MT9D111_AUTO_EXPOSURE_FAST_SETTLING_PLUS_METERING           4
 
+// Skip values
+#define MT9D111_SKIP_2X                                             0
+#define MT9D111_SKIP_4X                                             1
+#define MT9D111_SKIP_8X                                             2
+#define MT9D111_SKIP_16X                                            3
+
 /**
  * \brief Class to implement the Micron MT9D111 image sensor.
  */
@@ -545,6 +551,23 @@ class MT9D111
         /**
          * \brief Writes a command to the sequencer of the driver.
          *
+         * Command or program to execute:
+         *      - 0 = Run
+         *      - 1 = Do Preview
+         *      - 2 = Do Capture
+         *      - 3 = Do Stabdby
+         *      - 4 = Do lock
+         *      - 5 = Refresh
+         *      - 6 = Refresh mode
+         *      .
+         *
+         *  Writing a positive value to this variable commands the sequencer to execute the corresponding
+         *  program. The sequencer resets cmd to 0, executes the program, and then resumes running in its
+         *  current state.
+         *
+         * \see MT9D111 - 1/3.2-Inch System-On-A-Chip (SOC) CMOS Digital Image Sensor. Table 11: Driver
+         * Variables-Sequencer Driver (ID = 1).
+         *
          * \param[in] cmd is the sequencer commad. It can be:
          * \parblock
          *      - MT9D111_DRIVER_VAR_SEQUENCER_CMD_RUN
@@ -560,6 +583,46 @@ class MT9D111
          * \return TRUE/FALSE if successful or not.
          */
         bool SequencerCmd(uint8_t cmd);
+
+        /**
+         * \brief Sets the row skipping.
+         *
+         * \param[in] context is context (A or B).
+         * \param[in] skip is the number of rows to skip. It can be:
+         * \parblock
+         *      - MT9D111_SKIP_2X
+         *      - MT9D111_SKIP_4X
+         *      - MT9D111_SKIP_8X
+         *      - MT9D111_SKIP_16X
+         *      .
+         * \endparblock
+         *
+         * \see MT9D111 - 1/3.2-Inch System-On-A-Chip (SOC) CMOS Digital Image Sensor. Page 125: Column and Row Skip.
+         * \see MT9D111 - 1/3.2-Inch System-On-A-Chip (SOC) CMOS Digital Image Sensor. Table 30: Skip Values
+         *
+         * \return TRUE/FALSE if successful or not.
+         */
+        bool SetRowSkipping(uint8_t context, uint8_t skip);
+
+        /**
+         * \brief Sets the column skipping.
+         *
+         * \param[in] context is context (A or B).
+         * \param[in] skip is the number of columns to skip. It can be:
+         * \parblock
+         *      - MT9D111_SKIP_2X
+         *      - MT9D111_SKIP_4X
+         *      - MT9D111_SKIP_8X
+         *      - MT9D111_SKIP_16X
+         *      .
+         * \endparblock
+         *
+         * \see MT9D111 - 1/3.2-Inch System-On-A-Chip (SOC) CMOS Digital Image Sensor. Page 125: Column and Row Skip.
+         * \see MT9D111 - 1/3.2-Inch System-On-A-Chip (SOC) CMOS Digital Image Sensor. Table 30: Skip Values
+         *
+         * \return TRUE/FALSE if successful or not.
+         */
+        bool SetColSkipping(uint8_t context, uint8_t skip);
 };
 
 #endif // MT9D111_H_

@@ -638,4 +638,146 @@ bool MT9D111::SequencerCmd(uint8_t cmd)
     return true;
 }
 
+bool MT9D111::SetRowSkipping(uint8_t context, uint8_t skip)
+{
+    // Testing skip value
+    switch(skip)
+    {
+        case MT9D111_SKIP_2X:   break;
+        case MT9D111_SKIP_4X:   break;
+        case MT9D111_SKIP_8X:   break;
+        case MT9D111_SKIP_16X:  break;
+        default:                return false;
+    }
+
+    switch(context)
+    {
+        case MT9D111_MODE_PREVIEW:
+            // Enable row skip
+            this->WriteRegBit(MT9D111_REG_READ_MODE_A, 4, true);
+
+            switch(skip)
+            {
+                case MT9D111_SKIP_2X:
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_A, 3, false);
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_A, 2, false);
+                    break;
+                case MT9D111_SKIP_4X:
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_A, 3, false);
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_A, 2, true);
+                    break;
+                case MT9D111_SKIP_8X:
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_A, 3, true);
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_A, 2, false);
+                    break;
+                case MT9D111_SKIP_16X:
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_A, 3, true);
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_A, 2, true);
+                    break;
+            }
+
+            break;
+        case MT9D111_MODE_CAPTURE:
+            // Enable row skip
+            this->WriteRegBit(MT9D111_REG_READ_MODE_B, 4, true);
+
+            switch(skip)
+            {
+                case MT9D111_SKIP_2X:
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_B, 3, false);
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_B, 2, false);
+                    break;
+                case MT9D111_SKIP_4X:
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_B, 3, false);
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_B, 2, true);
+                    break;
+                case MT9D111_SKIP_8X:
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_B, 3, true);
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_B, 2, false);
+                    break;
+                case MT9D111_SKIP_16X:
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_B, 3, true);
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_B, 2, true);
+                    break;
+            }
+
+            break;
+        defautl:
+            return false;
+    }
+
+    return true;
+}
+
+bool MT9D111::SetColSkipping(uint8_t context, uint8_t skip)
+{
+    // Testing skip value
+    switch(skip)
+    {
+        case MT9D111_SKIP_2X:   break;
+        case MT9D111_SKIP_4X:   break;
+        case MT9D111_SKIP_8X:   break;
+        case MT9D111_SKIP_16X:  break;
+        default:                return false;
+    }
+
+    switch(context)
+    {
+        case MT9D111_MODE_PREVIEW:
+            // Enable row skip
+            this->WriteRegBit(MT9D111_REG_READ_MODE_A, 7, true);
+
+            switch(skip)
+            {
+                case MT9D111_SKIP_2X:
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_A, 6, false);
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_A, 5, false);
+                    break;
+                case MT9D111_SKIP_4X:
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_A, 6, false);
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_A, 5, true);
+                    break;
+                case MT9D111_SKIP_8X:
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_A, 6, true);
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_A, 5, false);
+                    break;
+                case MT9D111_SKIP_16X:
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_A, 6, true);
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_A, 5, true);
+                    break;
+            }
+
+            break;
+        case MT9D111_MODE_CAPTURE:
+            // Enable row skip
+            this->WriteRegBit(MT9D111_REG_READ_MODE_B, 7, true);
+
+            switch(skip)
+            {
+                case MT9D111_SKIP_2X:
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_B, 6, false);
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_B, 5, false);
+                    break;
+                case MT9D111_SKIP_4X:
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_B, 6, false);
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_B, 5, true);
+                    break;
+                case MT9D111_SKIP_8X:
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_B, 6, true);
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_B, 5, false);
+                    break;
+                case MT9D111_SKIP_16X:
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_B, 6, true);
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_B, 5, true);
+                    break;
+            }
+
+            break;
+        defautl:
+            return false;
+    }
+
+    return true;
+}
+
 //! \} End of mt9d111 group
