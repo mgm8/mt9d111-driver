@@ -780,4 +780,43 @@ bool MT9D111::SetColSkipping(uint8_t context, uint8_t skip)
     return true;
 }
 
+bool MT9D111::SetNumberOfADCs(uint8_t context, uint8_t adcs)
+{
+    switch(context)
+    {
+        case MT9D111_MODE_PREVIEW:
+            switch(adcs)
+            {
+                case 1:
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_A, 10, true);
+                    break;
+                case 2:
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_A, 10, false);
+                    break;
+                default:
+                    return false;
+            }
+
+            break;
+        case MT9D111_MODE_CAPTURE:
+            switch(adcs)
+            {
+                case 1:
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_B, 10, true);
+                    break;
+                case 2:
+                    this->WriteRegBit(MT9D111_REG_READ_MODE_B, 10, false);
+                    break;
+                default:
+                    return false;
+            }
+
+            break;
+        default:
+            return false;
+    }
+
+    return true;
+}
+
 //! \} End of mt9d111 group

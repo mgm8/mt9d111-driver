@@ -587,7 +587,7 @@ class MT9D111
         /**
          * \brief Sets the row skipping.
          *
-         * \param[in] context is context (A or B).
+         * \param[in] context is the context (A or B).
          * \param[in] skip is the number of rows to skip. It can be:
          * \parblock
          *      - MT9D111_SKIP_2X
@@ -607,7 +607,7 @@ class MT9D111
         /**
          * \brief Sets the column skipping.
          *
-         * \param[in] context is context (A or B).
+         * \param[in] context is the context (A or B).
          * \param[in] skip is the number of columns to skip. It can be:
          * \parblock
          *      - MT9D111_SKIP_2X
@@ -623,6 +623,29 @@ class MT9D111
          * \return TRUE/FALSE if successful or not.
          */
         bool SetColSkipping(uint8_t context, uint8_t skip);
+
+        /**
+         * \brief Sets the number of ADCs to use during a reading (1 or 2).
+         *
+         * The sensor core has two ADCs to convert the pixel values to digital data. Because the ADCs run at
+         * half the master clock frequency, it is possible to achieve a data rate equal to the master clock
+         * frequency. By turning off one of the ADCs, the power consumption of the sensor is reduced. The pixel
+         * clock is then reduced by a factor of two. In R0x20:0 or R0x21:0, bit 10 chooses between the two modes:
+         *      - 0: Use both ADCs and read out at the set pixel clock frequency (R0x0A:0[3:0])
+         *      - 1: Use 1 ADC and read out at half the set pixel clock frequency (R0x0A:0[3:0])
+         *      .
+         *
+         * This can be used, for instance, when the camera is in preview mode.
+         *
+         * \param[in] context is the context (A or B).
+         * \param[in] adcs is the number of ADCs to use in the given context (1 or 2).
+         *
+         * \see MT9D111 - 1/3.2-Inch System-On-A-Chip (SOC) CMOS Digital Image Sensor. Page 124: Readout Speeds
+         * and Power Savings.
+         *
+         * \return TRUE/FALSE if successful or not.
+         */
+        bool SetNumberOfADCs(uint8_t context, uint8_t adcs);
 };
 
 #endif // MT9D111_H_
