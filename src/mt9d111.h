@@ -38,6 +38,7 @@
 
 #include <stdint.h>
 
+#include "debug.h"
 #include "i2c.h"
 #include "gpio.h"
 
@@ -112,6 +113,7 @@
 class MT9D111
 {
     private:
+        Debug *debug;   /**< Debug class. */
         I2C *i2c;       /**< I2C device. */
         bool is_open;   /**< Flag to indicate if the I2C communication is open or not. */
         GPIO *reset;    /**< RESET pin. */

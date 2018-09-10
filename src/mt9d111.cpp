@@ -34,6 +34,7 @@
  */
 
 #include <unistd.h>
+#include <string>
 
 #include "mt9d111.h"
 #include "mt9d111_pins.h"
@@ -41,39 +42,62 @@
 #include "mt9d111_config.h"
 #include "mt9d111_driver.h"
 
+using namespace std;
+
 MT9D111::MT9D111()
 {
-    is_open = false;
+    this->is_open = false;
+
+    this->debug = new Debug("MT9D111");
+
+    this->debug->WriteEvent("Object created!");
+    this->debug->NewLine();
+
 }
 
 MT9D111::MT9D111(const char *dev_adr)
 {
+    this->debug = new Debug("MT9D111");
+
+    this->debug->WriteEvent("Initializing...");
+    this->debug->NewLine();
+
     this->Open(dev_adr);
 }
 
 MT9D111::~MT9D111()
 {
-    if (is_open)
+    this->debug->WriteEvent("Destroying object...");
+    this->debug->NewLine();
+
+    if (this->is_open)
     {
-        delete i2c;
+        delete this->i2c;
     }
 
-    is_open = false;
+    this->is_open = false;
+
+    delete debug;
 }
 
 bool MT9D111::Open(const char *dev_adr)
 {
-    i2c     = new I2C;
-    reset   = new GPIO;
-    standby = new GPIO;
+    this->debug->WriteEvent(string("Opening device \"") + string(dev_adr) + string("\"..."));
+
+    this->i2c     = new I2C;
+    this->reset   = new GPIO;
+    this->standby = new GPIO;
 
     if (i2c->Setup(dev_adr, MT9D111_CONFIG_I2C_ID) and
        reset->Open(MT9D111_GPIO_RESET, GPIO_DIR_OUTPUT) and
        standby->Open(MT9D111_GPIO_STANDBY, GPIO_DIR_OUTPUT))
     {
+        this->debug->WriteMsg("SUCCESS!");
+        this->debug->NewLine();
+
         if (this->HardReset())
         {
-            is_open = true;
+            this->is_open = true;
 
             return true;
         }
@@ -84,7 +108,10 @@ bool MT9D111::Open(const char *dev_adr)
     }
     else
     {
-        is_open = false;
+        this->debug->WriteMsg("FAILURE!");
+        this->debug->NewLine();
+
+        this->is_open = false;
 
         return false;
     }
@@ -92,11 +119,14 @@ bool MT9D111::Open(const char *dev_adr)
 
 bool MT9D111::Close()
 {
-    delete i2c;
-    delete reset;
-    delete standby;
+    this->debug->WriteEvent("Closing device...");
+    this->debug->NewLine();
 
-    is_open = false;
+    delete this->i2c;
+    delete this->reset;
+    delete this->standby;
+
+    this->is_open = false;
 
     return true;
 }
@@ -139,19 +169,22 @@ bool MT9D111::WriteRegBit(uint8_t adr, uint8_t bit, bool state)
 
 bool MT9D111::HardReset()
 {
-    if (!standby->Set(false))
+    this->debug->WriteEvent("Hard reset...");
+    this->debug->NewLine();
+
+    if (!this->standby->Set(false))
     {
         return false;
     }
 
-    if (!reset->Set(false))
+    if (!this->reset->Set(false))
     {
         return false;
     }
 
     usleep(100);    // 100 us
 
-    if (!reset->Set(true))
+    if (!this->reset->Set(true))
     {
         return false;
     }
@@ -161,6 +194,9 @@ bool MT9D111::HardReset()
 
 bool MT9D111::SoftReset()
 {
+    this->debug->WriteEvent("Soft reset...");
+    this->debug->NewLine();
+
     // Bypass the PLL
     if (!this->WriteReg(MT9D111_REG_CLOCK_CONTROL, 0xA000))
     {
@@ -190,17 +226,30 @@ bool MT9D111::SoftReset()
 
 bool MT9D111::HardStandby(bool s)
 {
-    return standby->Set(s);
+    this->debug->WriteEvent("Hard standby...");
+    this->debug->NewLine();
+
+    return this->standby->Set(s);
 }
 
 bool MT9D111::SoftStandby(bool s)
 {
+    this->debug->WriteEvent("Soft standby...");
+    this->debug->NewLine();
+
     // Changing the STANDBY bit state
     return this->WriteRegBit(MT9D111_REG_RESET, 2, s);
 }
 
 bool MT9D111::EnablePLL(uint16_t val_1, uint16_t val_2)
 {
+    this->debug->WriteEvent("Enabling PLL with: ");
+    this->debug->WriteHex(val_1);
+    this->debug->WriteMsg(" and ");
+    this->debug->WriteHex(val_2);
+    this->debug->WriteMsg("...");
+    this->debug->NewLine();
+
     this->SetRegisterPage(MT9D111_REG_PAGE_0);
 
     // Program PLL frequency settings
@@ -253,6 +302,9 @@ bool MT9D111::Reset(uint8_t type)
 
 bool MT9D111::Config()
 {
+    this->debug->WriteEvent("Loading configuration parameters from \"Register Wizard\"...");
+    this->debug->NewLine();
+
     for(uint8_t i=0; i<(sizeof(reg_default_vals)/sizeof(Register)); i++)
     {
         if (!this->WriteReg(reg_default_vals[i].address, reg_default_vals[i].value))
@@ -292,9 +344,9 @@ bool MT9D111::LeaveStandby(uint8_t type)
 
 bool MT9D111::ReadReg(uint8_t adr, uint16_t *val)
 {
-    if (is_open)
+    if (this->is_open)
     {
-        uint16_t reg_val = i2c->ReadReg16(adr);
+        uint16_t reg_val = this->i2c->ReadReg16(adr);
 
         reg_val = ((reg_val & 0xFF00) >> 8) + ((reg_val & 0x00FF) << 8);
 
@@ -310,11 +362,11 @@ bool MT9D111::ReadReg(uint8_t adr, uint16_t *val)
 
 bool MT9D111::WriteReg(uint8_t adr, uint16_t val)
 {
-    if (is_open)
+    if (this->is_open)
     {
         val = ((val & 0xFF00) >> 8) + ((val & 0x00FF) << 8);
 
-        return i2c->WriteReg16(adr, val);
+        return this->i2c->WriteReg16(adr, val);
     }
     else
     {
@@ -324,59 +376,104 @@ bool MT9D111::WriteReg(uint8_t adr, uint16_t val)
 
 bool MT9D111::CheckDevice()
 {
-    if (is_open)
+    this->debug->WriteEvent("Checking device...");
+
+    if (this->is_open)
     {
         uint16_t reg_val;
 
         if (!this->ReadReg(MT9D111_REG_RESERVED, &reg_val))
         {
+            this->debug->WriteMsg("FAILURE!");
+            this->debug->NewLine();
+
             return false;
         }
 
         if (reg_val == 0x1519)
         {
+            this->debug->WriteMsg("SUCCESS!");
+            this->debug->NewLine();
+
             return true;
         }
         else
         {
+            this->debug->WriteMsg("FAILURE!");
+            this->debug->NewLine();
+
+            this->debug->WriteEvent("Wrong device ID! (read=");
+            this->debug->WriteHex(reg_val);
+            this->debug->WriteMsg(", expected=");
+            this->debug->WriteHex(0x1519);
+            this->debug->WriteMsg(")");
+            this->debug->NewLine();
+
             return false;
         }
     }
     else
     {
+        this->debug->WriteMsg("FAILURE!");
+        this->debug->NewLine();
+
+        this->debug->WriteEvent("Communication bus not opened!");
+        this->debug->NewLine();
+
         return false;
     }
 }
 
 bool MT9D111::SetMode(uint8_t mode)
 {
+    this->debug->WriteEvent("Set mode to ");
+
     switch(mode)
     {
         case MT9D111_MODE_PREVIEW:
+            this->debug->WriteMsg("PREVIEW...");
+
             if (this->WriteReg(MT9D111_REG_CONTEXT_CONTROL, 0x0000) and
                 this->WriteReg(MT9D111_REG_HORIZONTAL_BLANKING_A, 0x00AE) and
                 this->WriteReg(MT9D111_REG_VERTICAL_BLANKING_A, 0x0010) and
                 this->WriteReg(MT9D111_REG_READ_MODE_A, 0x0490))
             {
+                this->debug->WriteMsg("SUCCESS!");
+                this->debug->NewLine();
+
                 return true;
             }
             else
             {
-                return true;
+                this->debug->WriteMsg("FAILURE!");
+                this->debug->NewLine();
+
+                return false;
             }
         case MT9D111_MODE_CAPTURE:
+            this->debug->WriteMsg("PREVIEW...");
+
             if (this->WriteReg(MT9D111_REG_CONTEXT_CONTROL, 0x000B) and
                 this->WriteReg(MT9D111_REG_HORIZONTAL_BLANKING_B, 0x015C) and
                 this->WriteReg(MT9D111_REG_VERTICAL_BLANKING_B, 0x0020) and
                 this->WriteReg(MT9D111_REG_READ_MODE_B, 0x0000))
             {
+                this->debug->WriteMsg("SUCCESS!");
+                this->debug->NewLine();
+
                 return true;
             }
             else
             {
+                this->debug->WriteMsg("FAILURE!");
+                this->debug->NewLine();
+
                 return false;
             }
         default:
+            this->debug->WriteMsg("UNKNOWN!");
+            this->debug->NewLine();
+
             return false;
     }
 }
