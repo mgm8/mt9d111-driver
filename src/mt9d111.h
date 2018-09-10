@@ -397,6 +397,16 @@ class MT9D111
         bool ReadReg(uint8_t adr, uint16_t *val);
 
         /**
+         * \brief Verifies the value of a register.
+         *
+         * \param[in] adr is the address of the register.
+         * \param[in] val is the expected value of the register.
+         *
+         * \return TRUE/FALSE if the verification was successful or not.
+         */
+        bool CheckReg(uint8_t adr, uint16_t val);
+
+        /**
          * \brief Writes a value to a register of the device.
          *
          * \param[in] adr is the address of the register.
@@ -405,6 +415,17 @@ class MT9D111
          * \return TRUE/FALSE if the writing was successful or not.
          */
         bool WriteReg(uint8_t adr, uint16_t val);
+
+        /**
+         * \brief Writes a value to a register of the device and verifies its value.
+         *
+         * \param[in] adr is the address of the register.
+         * \param[in] val is the value to write into the register.
+         * \param[in] attempts is the number of attempts to try writing to a register in case of failure.
+         *
+         * \return TRUE/FALSE if the writing was successful or not.
+         */
+        bool WriteAndCheckReg(uint8_t adr, uint16_t val, unsigned int attempts=5);
 
         /**
          * \brief Checks if the sensor is connected and/or working.

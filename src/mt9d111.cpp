@@ -370,6 +370,36 @@ bool MT9D111::ReadReg(uint8_t adr, uint16_t *val)
     }
 }
 
+bool MT9D111::CheckReg(uint8_t adr, uint16_t val)
+{
+    uint16_t reg_val = 0xFFFF;
+
+    if (this->ReadReg(adr, &reg_val))
+    {
+        if (reg_val == val)
+        {
+            return true;
+        }
+        else
+        {
+            this->debug->WriteEvent("Error checking register ");
+            this->debug->WriteHex(adr);
+            this->debug->WriteMsg("! (read=");
+            this->debug->WriteHex(reg_val);
+            this->debug->WriteMsg(", expected=");
+            this->debug->WriteHex(val);
+            this->debug->WriteMsg(")");
+            this->debug->NewLine();
+
+            return false;
+        }
+    }
+    else
+    {
+        return false;
+    }
+}
+
 bool MT9D111::WriteReg(uint8_t adr, uint16_t val)
 {
     if (this->is_open)
@@ -382,6 +412,39 @@ bool MT9D111::WriteReg(uint8_t adr, uint16_t val)
     {
         return false;
     }
+}
+
+bool MT9D111::WriteAndCheckReg(uint8_t adr, uint16_t val, unsigned int attempts)
+{
+    for(unsigned int i=0; i<attempts; i++)
+    {
+        if (this->WriteReg(adr, val))
+        {
+            if (this->CheckReg(adr, val))
+            {
+                return true;
+            }
+            else
+            {
+                this->debug->WriteEvent("Error writing ");
+                this->debug->WriteHex(val);
+                this->debug->WriteMsg(" to address ");
+                this->debug->WriteHex(adr);
+                this->debug->WriteMsg("! Trying again (");
+                this->debug->WriteDec(i+1);
+                this->debug->WriteMsg(" of ");
+                this->debug->WriteDec(attempts);
+                this->debug->WriteMsg(")");
+                this->debug->NewLine();
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    return false;
 }
 
 bool MT9D111::CheckDevice()
