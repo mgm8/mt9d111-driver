@@ -52,7 +52,6 @@ MT9D111::MT9D111()
 
     this->debug->WriteEvent("Object created!");
     this->debug->NewLine();
-
 }
 
 MT9D111::MT9D111(const char *dev_adr)
@@ -243,7 +242,7 @@ bool MT9D111::SoftStandby(bool s)
 
 bool MT9D111::EnablePLL(uint16_t val_1, uint16_t val_2)
 {
-    this->debug->WriteEvent("Enabling PLL with: ");
+    this->debug->WriteEvent("Enabling PLL with ");
     this->debug->WriteHex(val_1);
     this->debug->WriteMsg(" and ");
     this->debug->WriteHex(val_2);
@@ -331,13 +330,24 @@ bool MT9D111::EnterStandby(uint8_t type)
 
 bool MT9D111::LeaveStandby(uint8_t type)
 {
+    this->debug->WriteEvent("Leaving ");
+
     switch(type)
     {
         case MT9D111_STANDBY_HARD:
+            this->debug->WriteMsg("HARD standby...");
+            this->debug->NewLine();
+
             return this->HardStandby(false);
         case MT9D111_STANDBY_SOFT:
+            this->debug->WriteMsg("SOFT standby...");
+            this->debug->NewLine();
+
             return this->SoftStandby(false);
         default:
+            this->debug->WriteMsg("HARD standby...");
+            this->debug->NewLine();
+
             return this->HardStandby(false);
     }
 }
@@ -480,50 +490,79 @@ bool MT9D111::SetMode(uint8_t mode)
 
 bool MT9D111::SetOutputFormat(uint8_t format)
 {
+    this->debug->WriteEvent("Configuring output format as ");
+
     this->SetRegisterPage(MT9D111_REG_PAGE_1);
 
     switch(format)
     {
         case MT9D111_OUTPUT_FORMAT_YCbCr:
+            this->debug->WriteMsg("YCbCr...");
+            this->debug->NewLine();
+
             this->WriteReg(MT9D111_REG_FACTORY_BYPASS, 0x01);
             this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_CONFIGURATION, 0x00);
             this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, 0x00);
             break;
         case MT9D111_OUTPUT_FORMAT_RGB565:
+            this->debug->WriteMsg("RGB565...");
+            this->debug->NewLine();
+
             this->WriteReg(MT9D111_REG_FACTORY_BYPASS, 0x01);
             this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_CONFIGURATION, 0x20);
             this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, 0x00);
             break;
         case MT9D111_OUTPUT_FORMAT_RGB555:
+            this->debug->WriteMsg("RGB555...");
+            this->debug->NewLine();
+
             this->WriteReg(MT9D111_REG_FACTORY_BYPASS, 0x01);
             this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_CONFIGURATION, 0x60);
             this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, 0x00);
             break;
         case MT9D111_OUTPUT_FORMAT_RGB444x:
+            this->debug->WriteMsg("RGB444x...");
+            this->debug->NewLine();
+
             this->WriteReg(MT9D111_REG_FACTORY_BYPASS, 0x01);
             this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_CONFIGURATION, 0xA0);
             this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, 0x00);
             break;
         case MT9D111_OUTPUT_FORMAT_RGBx444:
+            this->debug->WriteMsg("RGBx444...");
+            this->debug->NewLine();
+
             this->WriteReg(MT9D111_REG_FACTORY_BYPASS, 0x01);
             this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_CONFIGURATION, 0xE0);
             this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, 0x00);
             break;
         case MT9D111_OUTPUT_FORMAT_JPEG:
+            this->debug->WriteMsg("JPEG...");
+            this->debug->NewLine();
+
             this->WriteReg(MT9D111_REG_FACTORY_BYPASS, 0x02);
             this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, 0x00);
             break;
         case MT9D111_OUTPUT_FORMAT_RAW_8:
+            this->debug->WriteMsg("RAW8...");
+            this->debug->NewLine();
+
             this->WriteReg(MT9D111_REG_MICROCONTROLLER_BOOT_MODE, 0x01);
             this->WriteReg(MT9D111_REG_FACTORY_BYPASS, 0x00);
             this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, 0x00);
             break;
         case MT9D111_OUTPUT_FORMAT_RAW_10:
+            this->debug->WriteMsg("RAW10...");
+            this->debug->NewLine();
+
             this->WriteReg(MT9D111_REG_MICROCONTROLLER_BOOT_MODE, 0x01);
             this->WriteReg(MT9D111_REG_FACTORY_BYPASS, 0x01);
             this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, 0x40);
             break;
         default:
+            this->debug->WriteMsg("UNKNOWN...");
+            this->debug->NewLine();
+
             return false;
     }
 
@@ -541,6 +580,11 @@ bool MT9D111::SetOutputFormat(uint8_t format)
 
 bool MT9D111::SetResolution(uint8_t mode, uint16_t width, uint16_t height)
 {
+    this->debug->WriteEvent("Configuring resolution as ");
+    this->debug->WriteDec(width);
+    this->debug->WriteMsg("x");
+    this->debug->WriteDec(height);
+
     if ((width > MT9D111_OUTPUT_MAX_WIDTH) or (height > MT9D111_OUTPUT_MAX_HEIGHT))
     {
         return false;
@@ -548,9 +592,14 @@ bool MT9D111::SetResolution(uint8_t mode, uint16_t width, uint16_t height)
 
     this->SetRegisterPage(MT9D111_REG_PAGE_1);
 
+    this->debug->WriteMsg(" for ");
+
     switch(mode)
     {
         case MT9D111_MODE_PREVIEW:
+            this->debug->WriteMsg("PREVIEW mode...");
+            this->debug->NewLine();
+
             // Output width
             this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_16_BIT_ACCESS |
                                                                          MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL |
@@ -566,6 +615,9 @@ bool MT9D111::SetResolution(uint8_t mode, uint16_t width, uint16_t height)
             this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, height);
             break;
         case MT9D111_MODE_CAPTURE:
+            this->debug->WriteMsg("CAPTURE mode...");
+            this->debug->NewLine();
+
             // Output width
             this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_16_BIT_ACCESS |
                                                                          MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL |
@@ -581,6 +633,9 @@ bool MT9D111::SetResolution(uint8_t mode, uint16_t width, uint16_t height)
             this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, height);
             break;
         default:
+            this->debug->WriteMsg("UNKNONW mode");
+            this->debug->NewLine();
+
             return false;
     }
 
@@ -592,31 +647,43 @@ bool MT9D111::SetResolution(uint8_t mode, uint16_t width, uint16_t height)
 
 bool MT9D111::SetSpecialEffects(uint8_t effect)
 {
+    this->debug->WriteEvent("Configuring special effects as ");
+
     this->SetRegisterPage(MT9D111_REG_PAGE_1);
 
     switch(effect)
     {
         case MT9D111_SPECIAL_EFFECTS_DISABLED:
+            this->debug->WriteMsg("DISABLED");
             this->WriteReg(MT9D111_REG_SPECIAL_EFFECTS, MT9D111_SPECIAL_EFFECTS_DISABLED | (1 << 6));
             break;
         case MT9D111_SPECIAL_EFFECTS_MONOCHROME:
+            this->debug->WriteMsg("MONOCHROME");
             this->WriteReg(MT9D111_REG_SPECIAL_EFFECTS, MT9D111_SPECIAL_EFFECTS_MONOCHROME | (1 << 6));
             break;
         case MT9D111_SPECIAL_EFFECTS_SEPIA:
+            this->debug->WriteMsg("SEPIA");
             this->WriteReg(MT9D111_REG_SPECIAL_EFFECTS, MT9D111_SPECIAL_EFFECTS_SEPIA | (1 << 6));
             break;
         case MT9D111_SPECIAL_EFFECTS_NEGATIVE:
+            this->debug->WriteMsg("NEGATIVE");
             this->WriteReg(MT9D111_REG_SPECIAL_EFFECTS, MT9D111_SPECIAL_EFFECTS_NEGATIVE | (1 << 6));
             break;
         case MT9D111_SPECIAL_EFFECTS_SOLARIZATION_WITH_UNMODIFIED_UV:
+            this->debug->WriteMsg("SOLARIZATION WITH UNMODIFIED UV");
             this->WriteReg(MT9D111_REG_SPECIAL_EFFECTS, MT9D111_SPECIAL_EFFECTS_SOLARIZATION_WITH_UNMODIFIED_UV | (1 << 6));
             break;
         case MT9D111_SPECIAL_EFFECTS_SOLARIZATION_WITH_UV:
+            this->debug->WriteMsg("SOLARIZATION WITH UV");
             this->WriteReg(MT9D111_REG_SPECIAL_EFFECTS, MT9D111_SPECIAL_EFFECTS_SOLARIZATION_WITH_UV | (1 << 6));
             break;
         default:
+            this->debug->WriteMsg("UNKNOWN");
             return false;
     }
+
+    this->debug->WriteMsg("...");
+    this->debug->NewLine();
 
     this->SetRegisterPage(MT9D111_REG_PAGE_1);
 
@@ -625,6 +692,8 @@ bool MT9D111::SetSpecialEffects(uint8_t effect)
 
 bool MT9D111::SetAutoExposure(uint8_t state, uint8_t config)
 {
+    this->debug->WriteEvent("Configuring auto-exposure for ");
+
     this->SetRegisterPage(MT9D111_REG_PAGE_1);
 
     uint16_t seq_state;
@@ -632,18 +701,23 @@ bool MT9D111::SetAutoExposure(uint8_t state, uint8_t config)
     switch(state)
     {
         case MT9D111_STATE_PREVIEW_ENTER:
+            this->debug->WriteMsg("PREVIEW ENTER state as ");
             seq_state = MT9D111_DRIVER_VAR_SEQUENCER_PREVIEW_PARAMS_0_AE;
             break;
         case MT9D111_STATE_PREVIEW:
+            this->debug->WriteMsg("PREVIEW state as ");
             seq_state = MT9D111_DRIVER_VAR_SEQUENCER_PREVIEW_PARAMS_1_AE;
             break;
         case MT9D111_STATE_PREVIEW_LEAVE:
+            this->debug->WriteMsg("PREVIEW LEAVE state as ");
             seq_state = MT9D111_DRIVER_VAR_SEQUENCER_PREVIEW_PARAMS_2_AE;
             break;
         case MT9D111_STATE_CAPTURE_ENTER:
+            this->debug->WriteMsg("PREVIEW ENTER state as ");
             seq_state = MT9D111_DRIVER_VAR_SEQUENCER_PREVIEW_PARAMS_3_AE;
             break;
         default:
+            this->debug->WriteMsg("UNKNOWN state as ");
             return false;
     }
 
@@ -654,12 +728,24 @@ bool MT9D111::SetAutoExposure(uint8_t state, uint8_t config)
 
     switch(config)
     {
-        case MT9D111_AUTO_EXPOSURE_OFF:                             break;
-        case MT9D111_AUTO_EXPOSURE_FAST_SETTLING:                   break;
-        case MT9D111_AUTO_EXPOSURE_MANUAL:                          break;
-        case MT9D111_AUTO_EXPOSURE_CONTINUOUS:                      break;
-        case MT9D111_AUTO_EXPOSURE_FAST_SETTLING_PLUS_METERING:     break;
-        default:                                                    return false;
+        case MT9D111_AUTO_EXPOSURE_OFF:
+            this->debug->WriteMsg("OFF...");
+            break;
+        case MT9D111_AUTO_EXPOSURE_FAST_SETTLING:
+            this->debug->WriteMsg("FAST SETTLING...");
+            break;
+        case MT9D111_AUTO_EXPOSURE_MANUAL:
+            this->debug->WriteMsg("MANUAL...");
+            break;
+        case MT9D111_AUTO_EXPOSURE_CONTINUOUS:
+            this->debug->WriteMsg("CONTINUOUS...");
+            break;
+        case MT9D111_AUTO_EXPOSURE_FAST_SETTLING_PLUS_METERING:
+            this->debug->WriteMsg("FAST SETTLING + METERING...");
+            break;
+        default:
+            this->debug->WriteMsg("UNKNOWN...");
+            return false;
     }
 
     this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, config);
@@ -708,18 +794,39 @@ bool MT9D111::SetSpoofFrames(bool en, uint16_t width, uint16_t height)
 
 bool MT9D111::SequencerCmd(uint8_t cmd)
 {
+    this->debug->WriteEvent("Executing sequencer command ");
+
     // Checking if the cmd is valid
     switch(cmd)
     {
-        case MT9D111_DRIVER_VAR_SEQUENCER_CMD_RUN:              break;
-        case MT9D111_DRIVER_VAR_SEQUENCER_CMD_DO_PREVIEW:       break;
-        case MT9D111_DRIVER_VAR_SEQUENCER_CMD_DO_CAPTURE:       break;
-        case MT9D111_DRIVER_VAR_SEQUENCER_CMD_DO_STANDBY:       break;
-        case MT9D111_DRIVER_VAR_SEQUENCER_CMD_DO_LOCK:          break;
-        case MT9D111_DRIVER_VAR_SEQUENCER_CMD_REFRESH:          break;
-        case MT9D111_DRIVER_VAR_SEQUENCER_CMD_REFRESH_MODE:     break;
-        default:                                                return false;
+        case MT9D111_DRIVER_VAR_SEQUENCER_CMD_RUN:
+            this->debug->WriteMsg("RUN");
+            break;
+        case MT9D111_DRIVER_VAR_SEQUENCER_CMD_DO_PREVIEW:
+            this->debug->WriteMsg("DO PREVIEW");
+            break;
+        case MT9D111_DRIVER_VAR_SEQUENCER_CMD_DO_CAPTURE:
+            this->debug->WriteMsg("DO CAPTURE");
+            break;
+        case MT9D111_DRIVER_VAR_SEQUENCER_CMD_DO_STANDBY:
+            this->debug->WriteMsg("DO STANDBY");
+            break;
+        case MT9D111_DRIVER_VAR_SEQUENCER_CMD_DO_LOCK:
+            this->debug->WriteMsg("DO LOCK");
+            break;
+        case MT9D111_DRIVER_VAR_SEQUENCER_CMD_REFRESH:
+            this->debug->WriteMsg("REFRESH");
+            break;
+        case MT9D111_DRIVER_VAR_SEQUENCER_CMD_REFRESH_MODE:
+            this->debug->WriteMsg("REFRESH MODE");
+            break;
+        default:
+            this->debug->WriteMsg("UNKNOWN");
+            return false;
     }
+
+    this->debug->WriteMsg("...");
+    this->debug->NewLine();
 
     this->SetRegisterPage(MT9D111_REG_PAGE_1);
 
@@ -879,9 +986,16 @@ bool MT9D111::SetColSkipping(uint8_t context, uint8_t skip)
 
 bool MT9D111::SetNumberOfADCs(uint8_t context, uint8_t adcs)
 {
+    this->debug->WriteEvent("Configuring the number of ADCs for ");
+
     switch(context)
     {
         case MT9D111_MODE_PREVIEW:
+            this->debug->WriteMsg("PREVIEW mode as ");
+            this->debug->WriteDec(adcs);
+            this->debug->WriteMsg("...");
+            this->debug->NewLine();
+
             switch(adcs)
             {
                 case 1:
@@ -896,6 +1010,11 @@ bool MT9D111::SetNumberOfADCs(uint8_t context, uint8_t adcs)
 
             break;
         case MT9D111_MODE_CAPTURE:
+            this->debug->WriteMsg("CAPTURE mode as ");
+            this->debug->WriteDec(adcs);
+            this->debug->WriteMsg("...");
+            this->debug->NewLine();
+
             switch(adcs)
             {
                 case 1:
@@ -910,6 +1029,9 @@ bool MT9D111::SetNumberOfADCs(uint8_t context, uint8_t adcs)
 
             break;
         default:
+            this->debug->WriteMsg("UNKNOWN mode!");
+            this->debug->NewLine();
+
             return false;
     }
 
