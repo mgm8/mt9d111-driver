@@ -888,7 +888,7 @@ bool MT9D111::SequencerCmd(uint8_t cmd)
     this->debug->WriteMsg("...");
     this->debug->NewLine();
 
-    this->SetRegisterPage(MT9D111_REG_PAGE_1);
+    this->SetRegisterPage(MT9D111_REG_PAGE_0);
 
     // Driver variable address
     this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_8_BIT_ACCESS |
