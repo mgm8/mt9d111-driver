@@ -306,10 +306,7 @@ bool MT9D111::Config()
 
     for(uint8_t i=0; i<(sizeof(reg_default_vals)/sizeof(Register)); i++)
     {
-        if (!this->WriteReg(reg_default_vals[i].address, reg_default_vals[i].value))
-        {
-            return false;
-        }
+        this->WriteAndCheckReg(reg_default_vals[i].address, reg_default_vals[i].value);
     }
 
     return true;
