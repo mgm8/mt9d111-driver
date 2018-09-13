@@ -574,41 +574,96 @@ bool MT9D111::SetOutputFormat(uint8_t format)
             this->debug->WriteMsg("YCbCr...");
             this->debug->NewLine();
 
-            this->WriteReg(MT9D111_REG_FACTORY_BYPASS, 0x01);
-            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_CONFIGURATION, 0x00);
-            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, 0x00);
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_8_BIT_ACCESS |
+                                                                         MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL |
+                                                                         MT9D111_DRIVER_ID_MODE |
+                                                                         MT9D111_DRIVER_VAR_MODE_OUT_FORMAT_A);
+
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, 0);
+
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_8_BIT_ACCESS |
+                                                                         MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL |
+                                                                         MT9D111_DRIVER_ID_MODE |
+                                                                         MT9D111_DRIVER_VAR_MODE_OUT_FORMAT_B);
+
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, 0);
+
             break;
         case MT9D111_OUTPUT_FORMAT_RGB565:
             this->debug->WriteMsg("RGB565...");
             this->debug->NewLine();
 
-            this->WriteReg(MT9D111_REG_FACTORY_BYPASS, 0x01);
-            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_CONFIGURATION, 0x20);
-            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, 0x00);
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_8_BIT_ACCESS |
+                                                                         MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL |
+                                                                         MT9D111_DRIVER_ID_MODE |
+                                                                         MT9D111_DRIVER_VAR_MODE_OUT_FORMAT_A);
+
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, (1 << 5));
+
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_8_BIT_ACCESS |
+                                                                         MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL |
+                                                                         MT9D111_DRIVER_ID_MODE |
+                                                                         MT9D111_DRIVER_VAR_MODE_OUT_FORMAT_B);
+
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, (1 << 5));
+
             break;
         case MT9D111_OUTPUT_FORMAT_RGB555:
             this->debug->WriteMsg("RGB555...");
             this->debug->NewLine();
 
-            this->WriteReg(MT9D111_REG_FACTORY_BYPASS, 0x01);
-            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_CONFIGURATION, 0x60);
-            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, 0x00);
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_8_BIT_ACCESS |
+                                                                         MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL |
+                                                                         MT9D111_DRIVER_ID_MODE |
+                                                                         MT9D111_DRIVER_VAR_MODE_OUT_FORMAT_A);
+
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, (1 << 5) | (1 << 6));
+
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_8_BIT_ACCESS |
+                                                                         MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL |
+                                                                         MT9D111_DRIVER_ID_MODE |
+                                                                         MT9D111_DRIVER_VAR_MODE_OUT_FORMAT_B);
+
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, (1 << 5) | (1 << 6));
+
             break;
         case MT9D111_OUTPUT_FORMAT_RGB444x:
             this->debug->WriteMsg("RGB444x...");
             this->debug->NewLine();
 
-            this->WriteReg(MT9D111_REG_FACTORY_BYPASS, 0x01);
-            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_CONFIGURATION, 0xA0);
-            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, 0x00);
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_8_BIT_ACCESS |
+                                                                         MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL |
+                                                                         MT9D111_DRIVER_ID_MODE |
+                                                                         MT9D111_DRIVER_VAR_MODE_OUT_FORMAT_A);
+
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_8_BIT_ACCESS |
+                                                                         MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL |
+                                                                         MT9D111_DRIVER_ID_MODE |
+                                                                         MT9D111_DRIVER_VAR_MODE_OUT_FORMAT_B);
+
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, (1 << 5) | (1 << 7));
+
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, (1 << 5) | (1 << 7));
+
             break;
         case MT9D111_OUTPUT_FORMAT_RGBx444:
             this->debug->WriteMsg("RGBx444...");
             this->debug->NewLine();
 
-            this->WriteReg(MT9D111_REG_FACTORY_BYPASS, 0x01);
-            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_CONFIGURATION, 0xE0);
-            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, 0x00);
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_8_BIT_ACCESS |
+                                                                         MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL |
+                                                                         MT9D111_DRIVER_ID_MODE |
+                                                                         MT9D111_DRIVER_VAR_MODE_OUT_FORMAT_A);
+
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, (1 << 5) | (1 << 6) | (1 << 7));
+
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_8_BIT_ACCESS |
+                                                                         MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL |
+                                                                         MT9D111_DRIVER_ID_MODE |
+                                                                         MT9D111_DRIVER_VAR_MODE_OUT_FORMAT_B);
+
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, (1 << 5) | (1 << 6) | (1 << 7));
+
             break;
         case MT9D111_OUTPUT_FORMAT_JPEG:
             this->debug->WriteMsg("JPEG...");
@@ -631,7 +686,7 @@ bool MT9D111::SetOutputFormat(uint8_t format)
 
             this->WriteReg(MT9D111_REG_MICROCONTROLLER_BOOT_MODE, 0x01);
             this->WriteReg(MT9D111_REG_FACTORY_BYPASS, 0x01);
-            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, 0x40);
+            this->WriteReg(MT9D111_REG_OUTPUT_FORMAT_TEST, (1 << 6));
             break;
         default:
             this->debug->WriteMsg("UNKNOWN...");
@@ -647,7 +702,7 @@ bool MT9D111::SetOutputFormat(uint8_t format)
         this->WriteReg(MT9D111_REG_JPEG_ENCODER_BYPASS, 0);
     }
 
-    this->SetRegisterPage(MT9D111_REG_PAGE_0);
+    this->SequencerCmd(MT9D111_DRIVER_VAR_SEQUENCER_CMD_REFRESH);
 
     return true;
 }

@@ -517,6 +517,64 @@ class MT9D111
         /**
          * \brief Sets the output format of the frames.
          *
+         * The MT9D131 can output several different formats. They are YCbCr, 565RGB, 555RGB, 444RGB, JPEG, and
+         * raw data.
+         *
+         * To select between YUV and RGB, bit 5 of variables mode.output_format_A (ID = 7, Offset = 0x7D) and
+         * mode.output_format_B (ID = 7, Offset = 0x7E) should be used, depending on which context mode is of
+         * interest. Within RGB, 565/555/444x/x444 modes can be chosen by bits 6 – 7 of the same variable:
+         *
+         *      - 00 = 16-bit 565RGB
+         *      - 01 = 15-bit 555RGB
+         *      - 10 = 12-bit 444xRGB
+         *      - 11 = 12-bit x444RGB
+         *      .
+         *
+         * A refresh is needed (seq.cmd = 5) before the new settings are effective. As for JPEG images, only
+         * context B has support for it. See “Enabling and Capturing JPEG” on page 28 for more details.
+         *
+         * Other bits for mode.output_format_A (ID = 7, Offset = 0x7D) and mode.output_format_B (ID = 7,
+         * Offset = 0x7E) are used for:
+         *
+         *      - Bit 0 = In YUV output mode, setting this bit high would swap Cb and Cr channels. In RGB mode,
+         *                it will swap the R and B channel. This bit is subject to synchronous update.
+         *      - Bit 1 = Setting this bit high would swap the chrominance byte with luminance byte in YUV
+         *                output. In RGB mode, it will swap odd and even bytes. This bit is subject to
+         *                synchronous update.
+         *      - Bit 2 = Progressive Bayer.
+         *      - Bit 3 = Monochrome output.
+         *      .
+         *
+         * Raw Bayer Data Output
+         *
+         * There are two ways to obtain raw Bayer data. In both cases, the data from the sensor core bypasses
+         * the color pipeline. Hence, it does not go through the any of its image processing units (however,
+         * AE, AWB, and so on may still be active).
+         *
+         * The first option is to output all 8 most significant bits in parallel (Bayer 8). In this case,
+         * D_OUT0-D_OUT7 represent sensor core data D[9:2].
+         *
+         *      # In order to put the sensor in this mode, the MCU (microcontroller unit) should first be
+         *        disabled by setting: R0x03:1 = 1// disable MCU
+         *      # Next, enable the bypass mode with: R0x09:1 = 0// enable sensor core bypass
+         *      .
+         *
+         * The pad slew while in bypass can be set using R0x0A:1[2:0]. With the color pipeline and MCU disabled,
+         * the sensor core parameters (integration time, gains, image size, power mode, etc.) can be programmed
+         * manually.
+         *
+         * The second option is to output all 10 bits by enabling "8+2 bypass" mode. In this mode (Bayer 8+2),
+         * the data bits are sent out in two bytes: D9-D2 in the first byte, and D1-D0 (with 0s padded in the
+         * more significant bit positions) for the second byte.
+         *
+         * To enable the Bayer 8+2 bypass mode:
+         *      # Program register R0x09:1[2:0] = 1 to set the proper data flow.
+         *      # Turn on "8+2" with R0x98:1[6] = 1.
+         *      .
+         *
+         * \see MT9D131 Developer Guide. Selecting Output Data Formats. Page 16.
+         * \see MT9D131 Developer Guide. Raw Bayer Data Output. Page 17.
+         *
          * \param[in] format is the new output format. It can be:
          * \parblock
          *      - MT9D111_OUTPUT_FORMAT_YCbCr
