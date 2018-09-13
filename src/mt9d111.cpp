@@ -496,56 +496,70 @@ bool MT9D111::CheckDevice()
 
 bool MT9D111::SetMode(uint8_t mode)
 {
-    this->debug->WriteEvent("Set mode to ");
+    this->debug->WriteEvent("Configuring mode to ");
 
     switch(mode)
     {
         case MT9D111_MODE_PREVIEW:
             this->debug->WriteMsg("PREVIEW...");
 
-            if (this->WriteReg(MT9D111_REG_CONTEXT_CONTROL, 0x0000) and
-                this->WriteReg(MT9D111_REG_HORIZONTAL_BLANKING_A, 0x00AE) and
-                this->WriteReg(MT9D111_REG_VERTICAL_BLANKING_A, 0x0010) and
-                this->WriteReg(MT9D111_REG_READ_MODE_A, 0x0490))
-            {
-                this->debug->WriteMsg("SUCCESS!");
-                this->debug->NewLine();
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_8_BIT_ACCESS |
+                                                                         MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL |
+                                                                         MT9D111_DRIVER_ID_SEQUENCER |
+                                                                         MT9D111_DRIVER_VAR_SEQUENCER_CAPTURE_PARAMS_MODE);
 
-                return true;
-            }
-            else
-            {
-                this->debug->WriteMsg("FAILURE!");
-                this->debug->NewLine();
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, 1);
 
-                return false;
-            }
+            this->SequencerCmd(MT9D111_DRIVER_VAR_SEQUENCER_CMD_DO_PREVIEW);
+
+            break;
         case MT9D111_MODE_CAPTURE:
             this->debug->WriteMsg("PREVIEW...");
 
-            if (this->WriteReg(MT9D111_REG_CONTEXT_CONTROL, 0x000B) and
-                this->WriteReg(MT9D111_REG_HORIZONTAL_BLANKING_B, 0x015C) and
-                this->WriteReg(MT9D111_REG_VERTICAL_BLANKING_B, 0x0020) and
-                this->WriteReg(MT9D111_REG_READ_MODE_B, 0x0000))
-            {
-                this->debug->WriteMsg("SUCCESS!");
-                this->debug->NewLine();
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_8_BIT_ACCESS |
+                                                                         MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL |
+                                                                         MT9D111_DRIVER_ID_SEQUENCER |
+                                                                         MT9D111_DRIVER_VAR_SEQUENCER_CAPTURE_PARAMS_MODE);
 
-                return true;
-            }
-            else
-            {
-                this->debug->WriteMsg("FAILURE!");
-                this->debug->NewLine();
+            this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, 0);
 
-                return false;
-            }
+            this->SequencerCmd(MT9D111_DRIVER_VAR_SEQUENCER_CMD_DO_CAPTURE);
+
+            break;
         default:
             this->debug->WriteMsg("UNKNOWN!");
             this->debug->NewLine();
 
             return false;
     }
+
+    if (this->GetMode() == mode)
+    {
+        this->debug->WriteMsg("SUCCESS!");
+        this->debug->NewLine();
+
+        return true;
+    }
+    else
+    {
+        this->debug->WriteMsg("FAILURE!");
+        this->debug->NewLine();
+
+        return false;
+    }
+}
+
+uint8_t MT9D111::GetMode()
+{
+    this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_ADDRESS, MT9D111_DRIVER_VARIABLE_8_BIT_ACCESS |
+                                                                 MT9D111_DRIVER_PHYSICAL_ACCESS_ADDRESS_LOGICAL |
+                                                                 MT9D111_DRIVER_ID_MODE |
+                                                                 MT9D111_DRIVER_VAR_MODE_CONTEXT);
+
+    uint16_t mode = 0xFF;
+    this->ReadReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, &mode);
+
+    return (uint8_t)(mode);
 }
 
 bool MT9D111::SetOutputFormat(uint8_t format)
@@ -673,6 +687,7 @@ bool MT9D111::SetResolution(uint8_t mode, uint16_t width, uint16_t height)
                                                                          MT9D111_DRIVER_ID_MODE |
                                                                          MT9D111_DRIVER_VAR_MODE_OUTPUT_HEIGHT_A);
             this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, height);
+
             break;
         case MT9D111_MODE_CAPTURE:
             this->debug->WriteMsg("CAPTURE mode...");
@@ -691,6 +706,7 @@ bool MT9D111::SetResolution(uint8_t mode, uint16_t width, uint16_t height)
                                                                          MT9D111_DRIVER_ID_MODE |
                                                                          MT9D111_DRIVER_VAR_MODE_OUTPUT_HEIGHT_B);
             this->WriteReg(MT9D111_REG_MICROCONTROLLER_VARIABLE_DATA, height);
+
             break;
         default:
             this->debug->WriteMsg("UNKNONW mode");

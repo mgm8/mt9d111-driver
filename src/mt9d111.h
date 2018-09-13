@@ -465,6 +465,31 @@ class MT9D111
         /**
          * \brief Sets the operation mode (or context) of the sensor.
          *
+         * There are two contexts (or modes) available, A and B. Context A is known as the preview mode and has
+         * a default resolution of 800x600, while context B is called the capture mode with a default resolution
+         * of 1600x1200.
+         *
+         * To switch from preview to the capture state, set the following variables:
+         *      - seq.captureParams.mode[1] = 1// ID = 1, Offset = 0x20
+         *      - seq.cmd = 2// ID = 1, Offset = 0x03
+         *      .
+         *
+         * To switch from capture back into preview mode, use the following settings:
+         *      - seq.captureParams.mode[1] = 0// ID = 1, Offset = 0x20
+         *      - seq.cmd = 1// ID = 1, Offset = 0x03
+         *      .
+         *
+         * The current context mode can also be read through the serial interface from the variable mode.context
+         * (DriverID = 7, Offset = 0x02). If mode.context is read back as logic "1", the capture mode is active.
+         * When the bit is cleared, the current mode is preview.
+         *
+         * For each context, there is a set of variables that enables the user to configure its properties.
+         * These settings are automatically put into effect by the firmware during context switching. Examples
+         * of configurable options are: output resolution, crop sizes, data format, output FIFO, spoof mode,
+         * slew rate, special effects, and gamma table.
+         *
+         * \see MT9D131 Developer Guide. Context Switching and Output Configuration. Page 16.
+         *
          * \param[in] mode is the operation mode. It can be:
          * \parblock
          *     - MT9D111_MODE_PREVIEW for preview mode (usually, lower resolution and faster acquisition).
@@ -475,6 +500,19 @@ class MT9D111
          * \return TRUE/FALSE if successful or not.
          */
         bool SetMode(uint8_t mode);
+
+        /**
+         * \brief Gets the current mode (or context) of the sensor.
+         *
+         * The current context mode can also be read through the serial interface from the variable mode.context
+         * (DriverID = 7, Offset = 0x02). If mode.context is read back as logic "1", the capture mode is active.
+         * When the bit is cleared, the current mode is preview.
+         *
+         * \see MT9D131 Developer Guide. Context Switching and Output Configuration. Page 16.
+         *
+         * \return The current mode (MT9D111_MODE_PREVIEW or MT9D111_MODE_CAPTURE).
+         */
+        uint8_t GetMode();
 
         /**
          * \brief Sets the output format of the frames.
@@ -498,6 +536,19 @@ class MT9D111
 
         /**
          * \brief Sets the output image resolution of the given mode.
+         *
+         * To change the output size of a context, the associated context image height and width values can be
+         * updated before switching to the targeted context. If the size is changed for the current (active)
+         * context, then a refresh command (seq.cmd = 5) needs to be executed additionally.
+         *
+         * For context A, use the variable mode.Output Width A (ID = 7, offset = 3) and mode.Output Height A
+         * (ID = 7, offset = 5).
+         *
+         * For context B, use the variable mode.Output Width B (ID = 7, offset = 7) and mode.Output Height B
+         * (ID = 7, offset = 9). These settings only change the output image size and do not have any effect on
+         * the frame rate or field of view.
+         *
+         * \see MT9D131 Developer Guide. Changing the Output Resolution. Page 16.
          *
          * \param[in] mode is the output mode (MT9D111_MODE_PREVIEW or MT9D111_MODE_CAPTURE).
          * \param[in] width is the output image width in pixels.
