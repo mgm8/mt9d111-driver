@@ -168,16 +168,22 @@ bool MT9D111::WriteRegBit(uint8_t adr, uint8_t bit, bool state)
 
 bool MT9D111::HardReset()
 {
-    this->debug->WriteEvent("Hard reset...");
+    this->debug->WriteEvent("Executing hard reset...");
     this->debug->NewLine();
 
     if (!this->standby->Set(false))
     {
+        this->debug->WriteEvent("Error during hard reset!");
+        this->debug->NewLine();
+
         return false;
     }
 
     if (!this->reset->Set(false))
     {
+        this->debug->WriteEvent("Error during hard reset!");
+        this->debug->NewLine();
+
         return false;
     }
 
@@ -185,6 +191,9 @@ bool MT9D111::HardReset()
 
     if (!this->reset->Set(true))
     {
+        this->debug->WriteEvent("Error during hard reset!");
+        this->debug->NewLine();
+
         return false;
     }
 
@@ -193,30 +202,42 @@ bool MT9D111::HardReset()
 
 bool MT9D111::SoftReset()
 {
-    this->debug->WriteEvent("Soft reset...");
+    this->debug->WriteEvent("Executing soft reset...");
     this->debug->NewLine();
 
     // Bypass the PLL
-    if (!this->WriteReg(MT9D111_REG_CLOCK_CONTROL, 0xA000))
+    if (!this->WriteAndCheckReg(MT9D111_REG_CLOCK_CONTROL, 0xA000))
     {
+        this->debug->WriteEvent("Error during soft reset!");
+        this->debug->NewLine();
+
         return false;
     }
 
     // Perform MCU reset
     if (!this->WriteReg(MT9D111_REG_ASSERT_STROBE_T3, 0x0501))
     {
+        this->debug->WriteEvent("Error during soft reset!");
+        this->debug->NewLine();
+
         return false;
     }
 
     // Enable soft reset
     if (!this->WriteReg(MT9D111_REG_RESET, 0x0021))
     {
+        this->debug->WriteEvent("Error during soft reset!");
+        this->debug->NewLine();
+
         return false;
     }
 
     // Disable soft reset
     if (!this->WriteReg(MT9D111_REG_RESET, 0x0000))
     {
+        this->debug->WriteEvent("Error during soft reset!");
+        this->debug->NewLine();
+
         return false;
     }
 
@@ -225,19 +246,51 @@ bool MT9D111::SoftReset()
 
 bool MT9D111::HardStandby(bool s)
 {
-    this->debug->WriteEvent("Hard standby...");
+    if (s)
+    {
+        this->debug->WriteEvent("Enabling hard standby...");
+    }
+    else
+    {
+        this->debug->WriteEvent("Disabling hard standby...");
+    }
+
     this->debug->NewLine();
 
-    return this->standby->Set(s);
+    if (!this->standby->Set(s))
+    {
+        this->debug->WriteEvent("Error during hard standby!");
+        this->debug->NewLine();
+
+        return false;
+    }
+
+    return true;
 }
 
 bool MT9D111::SoftStandby(bool s)
 {
-    this->debug->WriteEvent("Soft standby...");
+    if (s)
+    {
+        this->debug->WriteEvent("Enabling soft standby...");
+    }
+    else
+    {
+        this->debug->WriteEvent("Disabling soft standby...");
+    }
+
     this->debug->NewLine();
 
     // Changing the STANDBY bit state
-    return this->WriteRegBit(MT9D111_REG_RESET, 2, s);
+    if (!this->WriteRegBit(MT9D111_REG_RESET, 2, s))
+    {
+        this->debug->WriteEvent("Error during soft standby!");
+        this->debug->NewLine();
+
+        return false;
+    }
+
+    return true;
 }
 
 bool MT9D111::EnablePLL(uint16_t val_1, uint16_t val_2)
@@ -252,15 +305,28 @@ bool MT9D111::EnablePLL(uint16_t val_1, uint16_t val_2)
     this->SetRegisterPage(MT9D111_REG_PAGE_0);
 
     // Program PLL frequency settings
-    if (!(this->WriteReg(MT9D111_REG_PLL_CONTROL_1, val_1) and
-        this->WriteReg(MT9D111_REG_PLL_CONTROL_2, val_2)))
+    if (!this->WriteAndCheckReg(MT9D111_REG_PLL_CONTROL_1, val_1))
     {
+        this->debug->WriteEvent("Error enabling the PLL!");
+        this->debug->NewLine();
+
+        return false;
+    }
+
+    if (!this->WriteAndCheckReg(MT9D111_REG_PLL_CONTROL_2, val_2))
+    {
+        this->debug->WriteEvent("Error enabling the PLL!");
+        this->debug->NewLine();
+
         return false;
     }
 
     // Power up PLL
     if (!this->WriteRegBit(MT9D111_REG_CLOCK_CONTROL, 14, false))
     {
+        this->debug->WriteEvent("Error enabling the PLL!");
+        this->debug->NewLine();
+
         return false;
     }
 
@@ -270,6 +336,9 @@ bool MT9D111::EnablePLL(uint16_t val_1, uint16_t val_2)
     // Turn off PLL bypass
     if (!this->WriteRegBit(MT9D111_REG_CLOCK_CONTROL, 15, false))
     {
+        this->debug->WriteEvent("Error enabling the PLL!");
+        this->debug->NewLine();
+
         return false;
     }
 
@@ -278,7 +347,19 @@ bool MT9D111::EnablePLL(uint16_t val_1, uint16_t val_2)
 
 bool MT9D111::SetRegisterPage(uint16_t page)
 {
-    return this->WriteReg(MT9D111_REG_PAGE_REGISTER, page);
+    if (this->WriteAndCheckReg(MT9D111_REG_PAGE_REGISTER, page))
+    {
+        return true;
+    }
+    else
+    {
+        this->debug->WriteEvent("Error configuring register page to ");
+        this->debug->WriteDec(page);
+        this->debug->WriteMsg("!");
+        this->debug->NewLine();
+
+        return false;
+    }
 }
 
 bool MT9D111::GetRegisterPage(uint16_t *page)
@@ -306,7 +387,13 @@ bool MT9D111::Config()
 
     for(uint8_t i=0; i<(sizeof(reg_default_vals)/sizeof(Register)); i++)
     {
-        this->WriteAndCheckReg(reg_default_vals[i].address, reg_default_vals[i].value);
+        if (!this->WriteAndCheckReg(reg_default_vals[i].address, reg_default_vals[i].value))
+        {
+            this->debug->WriteEvent("Error loading configuration parameters!");
+            this->debug->NewLine();
+
+            return false;
+        }
     }
 
     return true;
@@ -327,24 +414,13 @@ bool MT9D111::EnterStandby(uint8_t type)
 
 bool MT9D111::LeaveStandby(uint8_t type)
 {
-    this->debug->WriteEvent("Leaving ");
-
     switch(type)
     {
         case MT9D111_STANDBY_HARD:
-            this->debug->WriteMsg("HARD standby...");
-            this->debug->NewLine();
-
             return this->HardStandby(false);
         case MT9D111_STANDBY_SOFT:
-            this->debug->WriteMsg("SOFT standby...");
-            this->debug->NewLine();
-
             return this->SoftStandby(false);
         default:
-            this->debug->WriteMsg("HARD standby...");
-            this->debug->NewLine();
-
             return this->HardStandby(false);
     }
 }
@@ -363,7 +439,7 @@ bool MT9D111::ReadReg(uint8_t adr, uint16_t *val)
     }
     else
     {
-        return true;
+        return false;
     }
 }
 
@@ -460,7 +536,7 @@ bool MT9D111::CheckDevice()
             return false;
         }
 
-        if (reg_val == 0x1519)
+        if (reg_val == MT9D111_ID_CODE)
         {
             this->debug->WriteMsg("SUCCESS!");
             this->debug->NewLine();
@@ -475,7 +551,7 @@ bool MT9D111::CheckDevice()
             this->debug->WriteEvent("Wrong device ID! (read=");
             this->debug->WriteHex(reg_val);
             this->debug->WriteMsg(", expected=");
-            this->debug->WriteHex(0x1519);
+            this->debug->WriteHex(MT9D111_ID_CODE);
             this->debug->WriteMsg(")");
             this->debug->NewLine();
 
